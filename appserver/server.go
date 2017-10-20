@@ -2,6 +2,7 @@ package appserver
 
 import ("github.com/gin-gonic/gin"
 	"net/http"
+	"github.com/wolf1996/gateway/appserver/controllers"
 )
 
 type ServerConfig struct {
@@ -22,6 +23,9 @@ func StartServer() error  {
 		respMsg = "hello "+ user
 		c.JSON(http.StatusOK, gin.H{"message":respMsg})
 	})
+
+	auth.GET("/user_info", controllers.GetUserInfo)
+
 	router.Run(":8080")
 	return nil
 }
