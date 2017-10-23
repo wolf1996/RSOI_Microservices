@@ -1,21 +1,26 @@
 package resources
 
-import "fmt"
+import (
+	"github.com/wolf1996/gateway/server"
+	"google.golang.org/grpc"
+	"context"
+)
 
 type UserInfo struct {
 	Name string
-	Count int
+	Count int64
 }
 
-var userMap = map [string]UserInfo {
-	"simpleUser": UserInfo{"Ivanov invan ivanovich", 4},
-	"eventOwner": UserInfo{"Kakoi-to chuvak", 3},
-}
 
-func GetUserInfo(id string) (*UserInfo, error){
-	inf, ok := userMap[id]
-	if !ok{
-		return nil, fmt.Errorf("Can't find user by id %s", id)
+func GetUserInfo(id string) (uinf *UserInfo,err  error){
+	conn, err := grpc.Dial("127.0.0.1:8000", grpc.WithInsecure())
+	if err != nil {
+		return
 	}
-	return &inf, nil
+	cli := server.NewUserServiceClient(conn)
+	info, err := cli.GetUserInfo(context.Background(), &server.UserId{id})
+	if err != nil {
+		return
+	}
+	return &UserInfo{info.Name, info.EventsSubscribed}, nil
 }
