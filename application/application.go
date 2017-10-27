@@ -7,10 +7,12 @@ import (
 	"net"
 )
 
+type UserConfig struct {
+	Port string
+}
 
-
-func StartApplication(){
-	lis, err := net.Listen("tcp", ":8000")
+func StartApplication(config UserConfig){
+	lis, err := net.Listen("tcp", config.Port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
