@@ -6,14 +6,24 @@ import (
 	"context"
 )
 
+type UserInfoConfig struct{
+	UserInfoServiceAddres string
+}
+
 type UserInfo struct {
 	Name string
 	Count int64
 }
 
+var addres string
+
+func SetUserInfoConfigs(config UserInfoConfig){
+	addres = config.UserInfoServiceAddres
+}
+
 
 func GetUserInfo(id string) (uinf *UserInfo,err  error){
-	conn, err := grpc.Dial("127.0.0.1:8000", grpc.WithInsecure())
+	conn, err := grpc.Dial(addres, grpc.WithInsecure())
 	if err != nil {
 		return
 	}

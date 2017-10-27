@@ -3,13 +3,23 @@ package appserver
 import ("github.com/gin-gonic/gin"
 	"net/http"
 	"github.com/wolf1996/gateway/appserver/controllers"
+	"github.com/wolf1996/gateway/appserver/resources"
 )
 
-type ServerConfig struct {
+type GatewayConfig struct{
 	Port string
+	UserInfoConf resources.UserInfoConfig
 }
 
-func StartServer() error  {
+var port string
+
+func applyConfig(config GatewayConfig){
+	port = config.Port
+	resources.SetUserInfoConfigs(config.UserInfoConf)
+}
+
+func StartServer(config GatewayConfig) error  {
+	applyConfig(config)
 	router := gin.Default()
 	auth := router.Group("/", gin.BasicAuth(
 		gin.Accounts{
@@ -26,6 +36,6 @@ func StartServer() error  {
 
 	auth.GET("/user_info", controllers.GetUserInfo)
 
-	router.Run(":8080")
+	router.Run(port)
 	return nil
 }
