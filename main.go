@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/wolf1996/user/application"
 	"github.com/spf13/viper"
+	"github.com/wolf1996/user/application/models"
 )
 
 
@@ -11,7 +12,13 @@ import (
 func parseViper() application.UserConfig {
 	viper.ReadInConfig()
 	port := viper.GetString("port")
-	return application.UserConfig{port}
+	database_user := viper.GetString("database.username")
+	pass := viper.GetString("database.password")
+	dbname := viper.GetString("database.dbname")
+	addres := viper.GetString("database.addres")
+	return application.UserConfig{port, models.UserDatabaseConfig{
+		database_user,pass, dbname, addres,
+	}}
 }
 
 func prepareViper()  {

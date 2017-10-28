@@ -5,13 +5,23 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	"github.com/wolf1996/user/application/models"
 )
 
 type UserConfig struct {
 	Port string
+	DatabaseConf models.UserDatabaseConfig
+}
+
+var port string
+
+func applyConfig(config UserConfig){
+	port = config.Port
+	models.ApplyConfig(config.DatabaseConf)
 }
 
 func StartApplication(config UserConfig){
+	applyConfig(config)
 	lis, err := net.Listen("tcp", config.Port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
