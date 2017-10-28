@@ -1,0 +1,17 @@
+syntax  = "proto3";
+
+message EventInfo{
+    int64 id = 1;
+    string name = 2;
+    int64 participants = 3;
+    string description = 4;
+}
+
+message EventId{
+    int64 id = 1;
+}
+service EventService {
+    rpc GetEventInfo(EventId) returns (EventInfo){};
+}
+
+//protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:server ./server.protoc
