@@ -2,5 +2,11 @@
   "port":":8080",
   "user_info_service": {
     "addres":"127.0.0.1:8000"
+  },
+  "event_info_service": {
+    "addres":"127.0.0.1:8001"
+  },
+  "registration_info_service": {
+    "addres":"127.0.0.1:8002"
   }
 }

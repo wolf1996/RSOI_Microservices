@@ -3,19 +3,26 @@ package appserver
 import ("github.com/gin-gonic/gin"
 	"net/http"
 	"github.com/wolf1996/gateway/appserver/controllers"
-	"github.com/wolf1996/gateway/appserver/resources"
+	"github.com/wolf1996/gateway/appserver/resources/userclient"
+	"github.com/wolf1996/gateway/appserver/resources/eventsclient"
+	"github.com/wolf1996/gateway/appserver/resources/registrationclient"
+
 )
 
 type GatewayConfig struct{
 	Port string
-	UserInfoConf resources.UserInfoConfig
+	UserInfoConf userclient.Config
+	EventsInfoConf eventsclient.Config
+	RegistrationInfoConf registrationclient.Config
 }
 
 var port string
 
 func applyConfig(config GatewayConfig){
 	port = config.Port
-	resources.SetUserInfoConfigs(config.UserInfoConf)
+	userclient.SetConfigs(config.UserInfoConf)
+	eventsclient.SetConfigs(config.EventsInfoConf)
+	registrationclient.SetConfigs(config.RegistrationInfoConf)
 }
 
 func StartServer(config GatewayConfig) error  {
@@ -35,6 +42,7 @@ func StartServer(config GatewayConfig) error  {
 	})
 
 	auth.GET("/user_info", controllers.GetUserInfo)
+	router.GET("/events/:event_id", controllers.GetEventInfo)
 
 	router.Run(port)
 	return nil

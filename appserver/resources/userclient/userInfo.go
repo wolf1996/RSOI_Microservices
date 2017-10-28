@@ -1,13 +1,15 @@
-package resources
+package userclient
 
 import (
-	"github.com/wolf1996/gateway/server"
+	"github.com/wolf1996/gateway/usserver"
 	"google.golang.org/grpc"
 	"context"
+	"log"
+	"fmt"
 )
 
-type UserInfoConfig struct{
-	UserInfoServiceAddres string
+type Config struct{
+	Addres string
 }
 
 type UserInfo struct {
@@ -17,8 +19,9 @@ type UserInfo struct {
 
 var addres string
 
-func SetUserInfoConfigs(config UserInfoConfig){
-	addres = config.UserInfoServiceAddres
+func SetConfigs(config Config){
+	addres = config.Addres
+	log.Print(fmt.Sprintf("used to userInfo service %s", addres))
 }
 
 
@@ -27,8 +30,8 @@ func GetUserInfo(id string) (uinf *UserInfo,err  error){
 	if err != nil {
 		return
 	}
-	cli := server.NewUserServiceClient(conn)
-	info, err := cli.GetUserInfo(context.Background(), &server.UserId{id})
+	cli := usserver.NewUserServiceClient(conn)
+	info, err := cli.GetUserInfo(context.Background(), &usserver.UserId{id})
 	if err != nil {
 		return
 	}

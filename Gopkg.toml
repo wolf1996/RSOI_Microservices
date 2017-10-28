@@ -4,15 +4,15 @@
 # Refer to https://github.com/golang/dep/blob/master/docs/Gopkg.toml.md
 # for detailed Gopkg.toml documentation.
 #
-# required = ["github.com/user/thing/cmd/thing"]
-# ignored = ["github.com/user/project/pkgX", "bitbucket.org/user/project/pkgA/pkgY"]
+# required = ["github.com/userclient/thing/cmd/thing"]
+# ignored = ["github.com/userclient/project/pkgX", "bitbucket.org/userclient/project/pkgA/pkgY"]
 #
 # [[constraint]]
-#   name = "github.com/user/project"
+#   name = "github.com/userclient/project"
 #   version = "1.0.0"
 #
 # [[constraint]]
-#   name = "github.com/user/project2"
+#   name = "github.com/userclient/project2"
 #   branch = "dev"
 #   source = "github.com/myfork/project2"
 #
