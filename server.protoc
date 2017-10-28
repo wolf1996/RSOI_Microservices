@@ -1,0 +1,17 @@
+syntax  = "proto3";
+
+message RegistrationInfo{
+    int64 Id = 1;
+    int64 UserId = 2;
+    int64 EventId = 3;
+}
+
+message RegistrationId{
+    int64 id = 1;
+}
+service UserService {
+    rpc GetRegistrationInfo(RegistrationId) returns (RegistrationInfo){};
+}
+
+
+// protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:server ./server.protoc
