@@ -4,9 +4,10 @@ import (
 	_ "github.com/lib/pq"
 	"database/sql"
 	"fmt"
+	"log"
 )
 
-type UserDatabaseConfig struct {
+type DatabaseConfig struct {
 	Username       string
 	Pass           string
 	DatabaseName   string
@@ -21,7 +22,7 @@ type UserInfo struct {
 	Count int64
 }
 
-func ApplyConfig(config UserDatabaseConfig) (err error) {
+func ApplyConfig(config DatabaseConfig) (err error) {
 	dbinfo := fmt.Sprintf("postgres://%s:%s@%s/%s",
 		config.Username, config.Pass, config.DatabaseAddres,config.DatabaseName)
 	db, err = sql.Open("postgres", dbinfo)
@@ -33,15 +34,18 @@ func ApplyConfig(config UserDatabaseConfig) (err error) {
 func GetUserInfo(login string) (inf UserInfo, err error) {
 	rows, err := db.Query("SELECT username, EVENTS_NUMBER FROM USER_INFO WHERE username = $1", login)
 	if err!=nil{
+		log.Print(err.Error())
 		return
 	}
 	defer rows.Close()
 	if !rows.Next() {
-		err= fmt.Errorf("Нет такого пользователя %s",login)
+		err= fmt.Errorf("ERROR: Нет такого пользователя %s",login)
+		log.Print(err.Error())
 		return
 	}
 	err = rows.Scan(&inf.Name, &inf.Count)
 	if err != nil {
+		log.Print(err.Error())
 		return
 	}
 	return

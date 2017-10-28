@@ -9,14 +9,14 @@ import (
 
 
 
-func parseViper() application.UserConfig {
+func parseViper() application.Config {
 	viper.ReadInConfig()
 	port := viper.GetString("port")
 	database_user := viper.GetString("database.username")
 	pass := viper.GetString("database.password")
 	dbname := viper.GetString("database.dbname")
 	addres := viper.GetString("database.addres")
-	return application.UserConfig{port, models.UserDatabaseConfig{
+	return application.Config{port, models.DatabaseConfig{
 		database_user,pass, dbname, addres,
 	}}
 }
