@@ -23,6 +23,22 @@ type UserInfo struct {
 	Count int64
 }
 
+func PrepareTests()(err error){
+	rows, err := db.Query("DROP TABLE IF EXISTS USER_INFO;"+
+	"CREATE TABLE USER_INFO ("+
+	"	ID       SERIAL PRIMARY KEY ,"+
+	"	USERNAME VARCHAR(256),"+
+	"	EVENTS_NUMBER INT DEFAULT(0)"+
+	");"+
+	"INSERT INTO USER_INFO VALUES  (DEFAULT, 'simpleUser', DEFAULT);)")
+	if err!=nil {
+		log.Print(err.Error())
+		return
+	}
+	defer rows.Close()
+	return
+}
+
 func ApplyConfig(config DatabaseConfig) (err error) {
 	dbinfo := fmt.Sprintf("postgres://%s:%s@%s/%s",
 		config.Username, config.Pass, config.DatabaseAddres,config.DatabaseName)
