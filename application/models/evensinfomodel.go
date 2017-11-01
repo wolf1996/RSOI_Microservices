@@ -23,6 +23,18 @@ type DatabaseConfig struct {
 
 var db *sql.DB
 
+
+func PrepareTests()(err error){
+	rows, err := db.Query("DROP TABLE IF EXISTS EVENTS_INFO;CREATE TABLE EVENTS_INFO (ID       SERIAL PRIMARY KEY ,		OWNERID VARCHAR(256), PARTICIPANT_COUNT INT DEFAULT(0),		DESCRIPTION VARCHAR(1024));INSERT INTO EVENTS_INFO VALUES  (DEFAULT, 'eventOwner', DEFAULT , 'KISH concert');")
+	if err!=nil {
+		log.Print(err.Error())
+		return
+	}
+	defer rows.Close()
+	return
+}
+
+
 func ApplyConfig(config DatabaseConfig) (err error) {
 	dbinfo := fmt.Sprintf("postgres://%s:%s@%s/%s",
 		config.Username, config.Pass, config.DatabaseAddres,config.DatabaseName)
