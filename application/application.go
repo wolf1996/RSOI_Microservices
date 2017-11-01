@@ -28,6 +28,6 @@ func StartApplication(config Config){
 		log.Fatalf("failed to listen: %v", err)
 	}
 	grpcServer := grpc.NewServer()
-	server.RegisterUserServiceServer(grpcServer, &GprsServerInstance{})
+	server.RegisterRegistrationServiceServer(grpcServer, &GprsServerInstance{})
 	grpcServer.Serve(lis)
 }

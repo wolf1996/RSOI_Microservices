@@ -2,12 +2,12 @@ syntax  = "proto3";
 
 message RegistrationInfo{
     int64 Id = 1;
-    int64 UserId = 2;
+    string UserId = 2;
     int64 EventId = 3;
 }
 
 message RegistrationToAdd{
-    int64 UserId = 1;
+    string UserId = 1;
     int64 EventId = 2;
 }
 
@@ -15,10 +15,17 @@ message RegistrationId{
     int64 id = 1;
 }
 
-service UserService {
+message UsersRegistrationsRequest{
+    string userId = 1;
+    int64 pageSize = 2;
+    int64 pageNumber = 3;
+}
+
+service RegistrationService {
     rpc GetRegistrationInfo(RegistrationId) returns (RegistrationInfo){};
     rpc AddRegistration(RegistrationToAdd) returns (RegistrationInfo){};
     rpc RemoveRegistration(RegistrationId) returns (RegistrationInfo){};
+    rpc GetUserRegistrations(UsersRegistrationsRequest) returns (stream RegistrationInfo){};
 }
 
 

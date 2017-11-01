@@ -61,3 +61,14 @@ func (inst GprsServerInstance)RemoveRegistration(cont context.Context,id *server
 	infV = &server.RegistrationInfo{inf.Id,inf.UserId, inf.EventId}
 	return
 }
+
+func (inst GprsServerInstance)	GetUserRegistrations(req *server.UsersRegistrationsRequest, stream server.RegistrationService_GetUserRegistrationsServer) (err error) {
+	if req.PageNumber <= 0 {
+		return fmt.Errorf("Invalid page name %s", req.PageNumber)
+	}
+	if req.PageSize <= 0 {
+		return fmt.Errorf("Invalid page size %s", req.PageSize)
+	}
+	err = models.GetUserRegistrations(req.UserId, req.PageNumber - 1, req.PageSize, stream )
+	return
+}
