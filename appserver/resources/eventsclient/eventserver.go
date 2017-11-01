@@ -40,3 +40,29 @@ func GetEventInfo(id int64) (uinf *EventInfo,err  error){
 	}
 	return &EventInfo{info.Id, info.Name, info.Participants, info.Description}, nil
 }
+
+func IncrementEventUsers(id int64) (uinf *EventInfo,err  error) {
+	conn, err := grpc.Dial(addres, grpc.WithInsecure())
+	if err != nil {
+		return
+	}
+	cli := evserver.NewEventServiceClient(conn)
+	info, err := cli.IncrementUsersNumber(context.Background(), &evserver.EventId{id})
+	if err != nil {
+		return
+	}
+	return &EventInfo{info.Id, info.Name, info.Participants, info.Description}, nil
+}
+
+func DecrementEventUsers(id int64) (uinf *EventInfo,err  error) {
+	conn, err := grpc.Dial(addres, grpc.WithInsecure())
+	if err != nil {
+		return
+	}
+	cli := evserver.NewEventServiceClient(conn)
+	info, err := cli.DecrementUsersNumber(context.Background(), &evserver.EventId{id})
+	if err != nil {
+		return
+	}
+	return &EventInfo{info.Id, info.Name, info.Participants, info.Description}, nil
+}

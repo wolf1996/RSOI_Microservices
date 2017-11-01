@@ -40,9 +40,12 @@ func StartServer(config GatewayConfig) error  {
 		respMsg = "hello "+ user
 		c.JSON(http.StatusOK, gin.H{"message":respMsg})
 	})
+	auth.POST("/events/:event_id/register",controllers.RegistrateMe)
+	auth.POST("/registrations/:registration_id/remove", controllers.RemoveRegistration)
 
 	auth.GET("/user_info", controllers.GetUserInfo)
 	router.GET("/events/:event_id", controllers.GetEventInfo)
+	router.GET("/registrations/:registration_id", controllers.GetRegisrationInfo)
 
 	router.Run(port)
 	return nil
