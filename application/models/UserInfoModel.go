@@ -18,6 +18,7 @@ type DatabaseConfig struct {
 var db *sql.DB
 
 type UserInfo struct {
+	Id 	  int64
 	Name string
 	Count int64
 }
@@ -31,8 +32,28 @@ func ApplyConfig(config DatabaseConfig) (err error) {
 }
 
 
+func IncrementUserEventCounter(id string) (inf UserInfo, err error) {
+	rows, err := db.Query("UPDATE USER_INFO SET EVENTS_NUMBER = EVENTS_NUMBER + 1 WHERE username = $1 RETURNING *;", id)
+	if err!=nil {
+		log.Print(err.Error())
+		return
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		err= fmt.Errorf("ERROR: Нет такого ивента %d",id)
+		log.Print(err.Error())
+		return
+	}
+	err = rows.Scan(&inf.Id , &inf.Name, &inf.Count)
+	if err != nil {
+		log.Print(err.Error())
+		return
+	}
+	return
+}
+
 func GetUserInfo(login string) (inf UserInfo, err error) {
-	rows, err := db.Query("SELECT username, EVENTS_NUMBER FROM USER_INFO WHERE username = $1", login)
+	rows, err := db.Query("SELECT * FROM USER_INFO WHERE username = $1", login)
 	if err!=nil{
 		log.Print(err.Error())
 		return
@@ -43,7 +64,28 @@ func GetUserInfo(login string) (inf UserInfo, err error) {
 		log.Print(err.Error())
 		return
 	}
-	err = rows.Scan(&inf.Name, &inf.Count)
+	err =  rows.Scan(&inf.Id , &inf.Name, &inf.Count)
+	if err != nil {
+		log.Print(err.Error())
+		return
+	}
+	return
+}
+
+
+func DecrementUserEventCounter(id string) (inf UserInfo, err error) {
+	rows, err := db.Query("UPDATE USER_INFO SET EVENTS_NUMBER = (CASE WHEN EVENTS_NUMBER > 0 THEN (EVENTS_NUMBER - 1) ELSE 0 END) WHERE username = $1 RETURNING *;", id)
+	if err!=nil {
+		log.Print(err.Error())
+		return
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		err= fmt.Errorf("ERROR: Нет такого ивента %d",id)
+		log.Print(err.Error())
+		return
+	}
+	err = rows.Scan(&inf.Id , &inf.Name, &inf.Count)
 	if err != nil {
 		log.Print(err.Error())
 		return

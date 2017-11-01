@@ -3,13 +3,19 @@ syntax  = "proto3";
 message UserInfo{
     string name = 1;
     int64 events_subscribed = 2;
+    int64  Id = 3;
+
 }
+
+message Empty{}
 
 message UserId{
     string id = 1;
 }
 service UserService {
     rpc GetUserInfo(UserId) returns (UserInfo){};
+    rpc IncrementUserCounter(UserId) returns (UserInfo){};
+    rpc DecrementUserCounter(UserId) returns (UserInfo){};
 }
 
 // protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:server ./server.protoc
