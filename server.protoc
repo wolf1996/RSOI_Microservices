@@ -7,11 +7,18 @@ message EventInfo{
     string description = 4;
 }
 
+message Empty{}
+
 message EventId{
     int64 id = 1;
 }
+
+
+
 service EventService {
     rpc GetEventInfo(EventId) returns (EventInfo){};
+    rpc IncrementUsersNumber(EventId) returns (EventInfo){};
+    rpc DecrementUsersNumber(EventId) returns (EventInfo){};
 }
 
 //protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:server ./server.protoc

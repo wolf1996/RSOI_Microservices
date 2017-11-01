@@ -31,6 +31,46 @@ func ApplyConfig(config DatabaseConfig) (err error) {
 	return nil
 }
 
+func IncrementEventUserCounter(id int64) (info EventInfo, err error) {
+	rows, err := db.Query("UPDATE events_info SET PARTICIPANT_COUNT = PARTICIPANT_COUNT + 1 WHERE id = $1 RETURNING *;", id)
+	if err!=nil{
+		log.Print(err.Error())
+		return
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		err= fmt.Errorf("ERROR: Нет такого ивента %d",id)
+		log.Print(err.Error())
+		return
+	}
+	err = rows.Scan(&info.Id, &info.Owner, &info.PartCount, &info.Description)
+	if err != nil {
+		log.Print(err.Error())
+		return
+	}
+	return
+}
+
+
+func DecrementEventUserCounter(id int64) (info EventInfo, err error) {
+	rows, err := db.Query("UPDATE events_info SET PARTICIPANT_COUNT =  (CASE WHEN PARTICIPANT_COUNT > 0 THEN (PARTICIPANT_COUNT - 1)ELSE 0 END) WHERE id = $1 RETURNING *;", id)
+	if err!=nil{
+		log.Print(err.Error())
+		return
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		err= fmt.Errorf("ERROR: Нет такого ивента %d",id)
+		log.Print(err.Error())
+		return
+	}
+	err = rows.Scan(&info.Id, &info.Owner, &info.PartCount, &info.Description)
+	if err != nil {
+		log.Print(err.Error())
+		return
+	}
+	return
+}
 
 func GetEventInfo(id int64)(info EventInfo, err error){
 	rows, err := db.Query("SELECT * FROM events_info WHERE id = $1", id)
