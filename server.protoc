@@ -6,11 +6,19 @@ message RegistrationInfo{
     int64 EventId = 3;
 }
 
+message RegistrationToAdd{
+    int64 UserId = 1;
+    int64 EventId = 2;
+}
+
 message RegistrationId{
     int64 id = 1;
 }
+
 service UserService {
     rpc GetRegistrationInfo(RegistrationId) returns (RegistrationInfo){};
+    rpc AddRegistration(RegistrationToAdd) returns (RegistrationInfo){};
+    rpc RemoveRegistration(RegistrationId) returns (RegistrationInfo){};
 }
 
 
