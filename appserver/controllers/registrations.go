@@ -38,7 +38,12 @@ func RegistrateMe(c *gin.Context) {
 		return
 	}
 
-	regdata, err := registrationclient.AddRegistration(userData.Id, eventData.Id)
+	regdata, err := registrationclient.AddRegistration(userData.Name, eventData.Id)
+	if err != nil {
+		log.Print(err.Error())
+		c.JSON(http.StatusNotFound, views.Error{err.Error()})
+		return
+	}
 	res := views.AllRegInfo{regdata.Id,
 		views.EventInfo{eventData.Id,
 				eventData.Owner,
@@ -125,4 +130,29 @@ func GetRegisrationInfo(c *gin.Context){
 		info.EventId,
 	}
 	c.JSON(http.StatusOK, inf)
+}
+
+func GetRegistrations(c *gin.Context){
+	strparam := c.Param("pagenum")
+	if len(strparam) == 0 {
+		strparam = "1"
+	}
+	pnum,err := strconv.ParseInt(strparam, 10, 64)
+	if err != nil {
+		log.Print(err.Error())
+		c.JSON(http.StatusBadRequest, views.Error{err.Error()})
+		return
+	}
+	var infs []views.RegistrationInfo
+	id := c.MustGet(gin.AuthUserKey).(string)
+	res, err := registrationclient.GetRegistrations(id,pnum,1)
+	if err != nil {
+		log.Print(err.Error())
+		c.JSON(http.StatusNotFound, views.Error{err.Error()})
+		return
+	}
+	for _, i := range res{
+		infs = append(infs, views.RegistrationInfo{i.Id, i.UserId, i.EventId})
+	}
+	c.JSON(http.StatusOK, infs)
 }
