@@ -66,7 +66,7 @@ func GetRegistration(id int64) (inf RegistrationInfo, err error) {
 		log.Print(err.Error())
 		return
 	}
-	err = rows.Scan(&inf.Id, &inf.UserId, &inf.EventId)
+	err = rows.Scan(&inf.Id, &inf.EventId, &inf.UserId)
 	if err != nil {
 		log.Print(err.Error())
 		return
