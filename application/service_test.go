@@ -9,7 +9,7 @@ import (
 )
 
 const databasename = "events_test"
-const username  = "rstest"
+const username  = "eventtest"
 const testpass  = "123456"
 const databaseaddres = "127.0.0.1"
 const testPort = ":8080"
