@@ -3,21 +3,22 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/wolf1996/gateway/appserver/views"
-	"github.com/wolf1996/gateway/appserver/resources/registrationclient"
+	"github.com/wolf1996/gateway/resources/registrationclient"
 	"log"
 	"net/http"
 	"strconv"
-	"github.com/wolf1996/gateway/appserver/resources/eventsclient"
-	"github.com/wolf1996/gateway/appserver/resources/userclient"
+	"github.com/wolf1996/gateway/resources/userclient"
 	_ "github.com/golang/protobuf/proto"
 	"google.golang.org/grpc/metadata"
 	_ "github.com/wolf1996/gateway/authtoken"
 	"github.com/golang/protobuf/proto"
 	"github.com/wolf1996/gateway/authtoken"
 	"encoding/base64"
+	"github.com/wolf1996/gateway/resources/eventsclient"
 )
 
 func RegistrateMe(c *gin.Context) {
+	//добавить токен здесь
 	user := c.MustGet(gin.AuthUserKey).(string)
 	key,err := strconv.ParseInt(c.Param("event_id"), 10, 64)
 	if err != nil {
@@ -31,12 +32,31 @@ func RegistrateMe(c *gin.Context) {
 		c.JSON(http.StatusNotFound, views.Error{err.Error()})
 		return
 	}
+	defer func(){
+		if err != nil {
+			log.Print("Some error occured, revert eventsclient counter")
+			_, errDef := eventsclient.DecrementEventUsers(key)
+			if errDef != nil{
+				log.Print("Defer error")
+			}
+		}
+	}()
 	userData, err := userclient.IncrementEventsCounter(user)
 	if err != nil {
 		log.Print(err.Error())
 		c.JSON(http.StatusNotFound, views.Error{err.Error()})
 		return
 	}
+
+	defer func(){
+		if err != nil {
+			log.Print("Some error occured, revert user counter")
+			_, errDef := userclient.DecrementEventsCounter(user)
+			if errDef != nil{
+				log.Print("Defer error")
+			}
+		}
+	}()
 
 	regdata, err := registrationclient.AddRegistration(userData.Name, eventData.Id)
 	if err != nil {
@@ -83,7 +103,7 @@ func RemoveRegistration(c *gin.Context) {
 		c.JSON(http.StatusNotFound, views.Error{err.Error()})
 		return
 	}
-	eventData, err := eventsclient.DecrementEventUsers(regdata.EventId)
+	err = eventsclient.DecrementEventUsersAsync(regdata.EventId)
 	if err != nil {
 		log.Print(err.Error())
 		c.JSON(http.StatusNotFound, views.Error{err.Error()})
@@ -95,12 +115,8 @@ func RemoveRegistration(c *gin.Context) {
 		c.JSON(http.StatusNotFound, views.Error{err.Error()})
 		return
 	}
-	res := views.AllRegInfo{regdata.Id,
-		views.EventInfo{eventData.Id,
-			eventData.Owner,
-			eventData.PartCount,
-			eventData.Description,
-		},
+	res := views.AllRegInfo2{regdata.Id,
+		regdata.EventId,
 		views.UserInfo{
 			userData.Name,
 			userData.Count,

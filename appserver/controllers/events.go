@@ -3,7 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/wolf1996/gateway/appserver/views"
-	"github.com/wolf1996/gateway/appserver/resources/eventsclient"
+	"github.com/wolf1996/gateway/resources/eventsclient"
 	"net/http"
 	"strconv"
 	"log"

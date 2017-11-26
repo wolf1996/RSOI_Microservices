@@ -1,0 +1,10 @@
+{
+  "user_info_service": {
+    "addres":"127.0.0.1:8000"
+  },
+  "rabbit":{
+    "user":"guest",
+    "password":"guest",
+    "addres":"127.0.0.1:5672"
+  }
+}

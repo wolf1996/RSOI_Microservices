@@ -4,7 +4,12 @@
     "addres":"127.0.0.1:8000"
   },
   "event_info_service": {
-    "addres":"127.0.0.1:8001"
+    "addres":"127.0.0.1:8001",
+    "events_rabbit" : {
+        "user" : "guest",
+        "password" : "guest",
+        "addres" : "127.0.0.1:5672"
+    }
   },
   "registration_info_service": {
     "addres":"127.0.0.1:8002"

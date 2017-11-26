@@ -1,3 +1,7 @@
+GOPATH= $(realpath ../../../../)
+PIDFILE= $(GOPATH)/pid/gateway.pid
+LOGFILE= $(GOPATH)/logs/gateway.log
+
 cleanprotocs:
 	rm -rf usserver
 	rm -rf evserver
@@ -30,3 +34,35 @@ clients: \
     eventsclient \
     registrationsclient \
     authtoken
+
+build_gateway_server:
+	GOPATH=$(GOPATH) go build -o $(GOPATH)/bin/gateway main.go
+
+start_gateway_server:
+	nohup $(GOPATH)/bin/gateway > $(LOGFILE) 2>&1 & echo $$!> $(PIDFILE)
+
+stop_gateway_server:
+	cat $(PIDFILE) | xargs kill
+
+build_gateway_qmanager:
+	 $(MAKE) -C queuemanager build_gateway_queuemanager
+
+start_gateway_qmanager:
+	$(MAKE) -C queuemanager start_queuemanager_server
+
+stop_gateway_qmanager:
+	$(MAKE) -C queuemanager stop_queuemanager_server
+
+
+build: \
+	clients \
+	build_gateway_qmanager \
+	build_gateway_server \
+
+start: \
+	start_gateway_server \
+	start_gateway_qmanager
+
+stop: \
+	stop_gateway_qmanager \
+	stop_gateway_server

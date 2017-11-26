@@ -10,7 +10,9 @@ import (
 
 type Config struct{
 	Addres string
+	QuemanagerConfig QConfig
 }
+
 
 type EventInfo struct {
 	Id              int64
@@ -24,7 +26,10 @@ var addres string
 func SetConfigs(config Config){
 	addres = config.Addres
 	log.Print(fmt.Sprintf("used to eventInfo service %s", addres))
-
+	err := ApplyConfig(config.QuemanagerConfig)
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 
@@ -65,4 +70,12 @@ func DecrementEventUsers(id int64) (uinf *EventInfo,err  error) {
 		return
 	}
 	return &EventInfo{info.Id, info.Name, info.Participants, info.Description}, nil
+}
+
+func DecrementEventUsersAsync(id int64) (err  error) {
+	DecrementEventsCounter(id)
+	if err != nil {
+		return
+	}
+	return
 }
