@@ -2,8 +2,8 @@
   "port":":8002",
   "database":{
     "addres":"127.0.0.1",
-    "username":"rsoi",
+    "username":"regs_user",
     "password":"123456",
-    "dbname":"rsoi_registrations"
+    "dbname":"regsdb"
   }
 }
