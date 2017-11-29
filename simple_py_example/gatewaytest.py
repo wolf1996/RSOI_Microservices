@@ -4,16 +4,7 @@
 import requests
 import json
 from requests.auth import HTTPBasicAuth
-
-USERLIST = {"simpleUser": "1", "eventOwner": "1",}
-
-def getNamedSessions():
-    sessions = dict()
-    for username, password in USERLIST.items():
-        user = requests.Session()
-        user.auth = (username, password)
-        sessions[username] = user
-    return sessions
+import utils.testcase as testcase
 
 def test_all(test, sessions):
     for name, user in sessions.items():
@@ -23,28 +14,31 @@ def test_all(test, sessions):
         print("###############################")
 
 def hello_test(session):
-    resp = session.get("http://127.0.0.1:8080/hello")
+    print("hello test")
+    resp = testcase.get_user_hello(session)
     print(resp.text)
 
 def user_info_test(session):
-    resp = session.get("http://127.0.0.1:8080/user/info")
+    print("user info test")
+    resp = testcase.get_user_info(session)
     print(resp.text)
 
 def registration(session):
-    resp = session.post("http://127.0.0.1:8080/events/1/register")
+    print("registration test")
+    resp = testcase.registre_user(session, 1)
     print(resp.text)
     return resp
 
 
 def removetest(session, id = 0):
-    print('remove')
-    resp = session.post("http://127.0.0.1:8080/registrations/{}/remove".format(id))
+    print("remove test")
+    resp = testcase.remove_reg(session, id)
     print(resp.text)
 
 
-def registrationslist(session, page = ""):
-    print('list')
-    resp = session.get("http://127.0.0.1:8080/user/registrations/{}".format(page))
+def registrationslist(session, page = None):
+    print('registration list test')
+    resp = testcase.registrations(session, page)
     print(resp.text)
 
 def s_user_reg(sessions):
@@ -55,21 +49,22 @@ def s_user_reg(sessions):
     print(jsonResp['id'])
     user_info_test(sess)
     registrationslist(sess)
-    registrationslist(sess, "3")
-    removetest(sess, jsonResp['id'])
+    registrationslist(sess, 3)
+    removetest(sess, int(jsonResp['id']))
     user_info_test(sess)
     
 
 def non_reg_tes():
-    res = requests.get("http://127.0.0.1:8080/events/1")  
+    res = testcase.get_event_info(requests.session, 1)  
     print(res)
     print(res.content) 
-    res = requests.get("http://127.0.0.1:8080/registrations/2")  
+    res = testcase.get_reg_info(requests.session, 2)  
     print(res)
     print(res.content) 
 
 def main():
-    sessions = getNamedSessions()
+    users = {"simpleUser": "1", "eventOwner": "1",}
+    sessions = testcase.getNamedSessions(users)
     test_all(hello_test, sessions)
     test_all(user_info_test, sessions) 
     print('########################')
