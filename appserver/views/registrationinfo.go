@@ -11,8 +11,8 @@ type AllRegInfo struct {
 	Event EventInfo `json:"event"`
 	User  UserInfo  `json:"user"`
 }
-type AllRegInfo2 struct {
+type AllRegInfoAsync struct {
 	Id int64 		`json:"id"`
 	EventId  int64`json:"event_id"`
-	User  UserInfo  `json:"user"`
+	User     string  `json:"user"`
 }

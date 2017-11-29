@@ -10,6 +10,7 @@ import (
 
 type Config struct{
 	Addres string
+	QuemanagerConfig QConfig
 }
 
 type UserInfo struct {
@@ -20,14 +21,21 @@ type UserInfo struct {
 
 var addres string
 
+var ConnectionError = fmt.Errorf("Can't connect to Users")
+
 func SetConfigs(config Config){
 	addres = config.Addres
 	log.Print(fmt.Sprintf("used to userInfo service %s", addres))
+	err := ApplyConfig(config.QuemanagerConfig)
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func IncrementEventsCounter(id string) (uinf *UserInfo,err  error){
 	conn, err := grpc.Dial(addres, grpc.WithInsecure())
 	if err != nil {
+		err = ConnectionError
 		return
 	}
 	cli := usserver.NewUserServiceClient(conn)
@@ -41,6 +49,7 @@ func IncrementEventsCounter(id string) (uinf *UserInfo,err  error){
 func DecrementEventsCounter(id string) (uinf *UserInfo,err  error){
 	conn, err := grpc.Dial(addres, grpc.WithInsecure())
 	if err != nil {
+		err = ConnectionError
 		return
 	}
 	cli := usserver.NewUserServiceClient(conn)
@@ -52,10 +61,16 @@ func DecrementEventsCounter(id string) (uinf *UserInfo,err  error){
 }
 
 
+func DecrementEventsCounterAsync(id string) (err  error){
+	UserEventsDecrementCounter(id)
+	return nil
+}
+
 
 func GetUserInfo(id string) (uinf *UserInfo,err  error){
 	conn, err := grpc.Dial(addres, grpc.WithInsecure())
 	if err != nil {
+		err = ConnectionError
 		return
 	}
 	cli := usserver.NewUserServiceClient(conn)

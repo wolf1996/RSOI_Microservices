@@ -17,8 +17,13 @@ func parseViper() appserver.GatewayConfig {
 	user := viper.GetString("event_info_service.events_rabbit.user")
 	pass := viper.GetString("event_info_service.events_rabbit.password")
 	addres := viper.GetString("event_info_service.events_rabbit.addres")
-	return appserver.GatewayConfig{port, userclient.Config{userServiceAddres},
-	eventsclient.Config{eventServiceAddres, eventsclient.QConfig{addres,user, pass}},registrationclient.Config{registrationServiceAddres} }
+	eventQue := eventsclient.QConfig{addres,user, pass}
+	user = viper.GetString("user_info_service.users_rabbit.user")
+	pass = viper.GetString("user_info_service.users_rabbit.password")
+	addres = viper.GetString("user_info_service.users_rabbit.addres")
+	userQue := userclient.QConfig{addres,user, pass}
+	return appserver.GatewayConfig{port, userclient.Config{userServiceAddres, userQue},
+	eventsclient.Config{eventServiceAddres, eventQue},registrationclient.Config{registrationServiceAddres} }
 }
 
 func prepareViper()  {

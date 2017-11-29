@@ -5,6 +5,7 @@ import (
 	"github.com/wolf1996/gateway/appserver/views"
 	"github.com/wolf1996/gateway/resources/userclient"
 	"net/http"
+	"log"
 )
 
 func GetUserInfo(c *gin.Context) {
@@ -12,7 +13,10 @@ func GetUserInfo(c *gin.Context) {
 	id := c.MustGet(gin.AuthUserKey).(string)
 	res, err := userclient.GetUserInfo(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, views.Error{err.Error()})
+		log.Printf("Errpr %s", err.Error())
+		err = userclient.ErrorTransform(err)
+		code := userclient.StatusCodeFromError(err)
+		c.JSON(code, views.Error{err.Error()})
 		return
 	}
 	inf.UserName = res.Name

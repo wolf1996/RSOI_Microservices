@@ -4,6 +4,7 @@ import (
 	"github.com/wolf1996/gateway/queuemanager/manager"
 	"github.com/spf13/viper"
 	"github.com/wolf1996/gateway/resources/eventsclient"
+	"github.com/wolf1996/gateway/resources/userclient"
 )
 
 func parseViper() manager.Config {
@@ -12,7 +13,9 @@ func parseViper() manager.Config {
 	pass := viper.GetString("rabbit.password")
 	addres := viper.GetString("rabbit.addres")
 	eventServiceAddres := viper.GetString("event_info_service.addres")
-	return manager.Config{manager.RabbitConfig{addres,user,pass}, eventsclient.Config{eventServiceAddres,eventsclient.QConfig{addres,user,pass}}}
+	userServiceAddres := viper.GetString("user_info_service.addres")
+	return manager.Config{manager.RabbitConfig{addres,user,pass}, eventsclient.Config{eventServiceAddres,eventsclient.QConfig{addres,user,pass}},
+		userclient.Config{userServiceAddres,userclient.QConfig{addres,user,pass}}}
 }
 
 func prepareViper()  {

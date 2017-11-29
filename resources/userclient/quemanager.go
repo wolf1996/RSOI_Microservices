@@ -1,11 +1,11 @@
-package eventsclient
+package userclient
 
 import (
-	"github.com/wolf1996/gateway/resources"
-	"github.com/streadway/amqp"
-	"fmt"
-	"log"
-	"encoding/json"
+"github.com/wolf1996/gateway/resources"
+"github.com/streadway/amqp"
+"fmt"
+"log"
+"encoding/json"
 )
 
 var ch *amqp.Channel
@@ -39,11 +39,11 @@ func handler(msg resources.MessageTokened)(err error){
 	return
 }
 
-func DecrementEventsCounter(eventId int64) (err error){
+func UserEventsDecrementCounter(userId string) (err error){
 	return handler(resources.MessageTokened{
 		Token:  "",
-		Message:DecrementRegistration{
-			EventId: eventId,
+		Message:UserDecrementMessage{
+			UserId: userId,
 		},
 	})
 }
@@ -56,7 +56,7 @@ func ApplyConfig(conf QConfig)(err error){
 	}
 	ch, err = conn.Channel()
 	q,err = ch.QueueDeclare(
-		"EventUsersDecrementMessages",
+		"UserDecrementMessages",
 		false,
 		false,
 		false,
@@ -64,8 +64,9 @@ func ApplyConfig(conf QConfig)(err error){
 		nil,
 	)
 	if err != nil {
-		log.Printf("EventProducerError: %s",err.Error())
+		log.Printf("UserProducerError: %s",err.Error())
 		return
 	}
 	return
 }
+

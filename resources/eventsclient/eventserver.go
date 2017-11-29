@@ -22,6 +22,7 @@ type EventInfo struct {
 }
 
 var addres string
+var ConnectionError = fmt.Errorf("Can't connect to Events")
 
 func SetConfigs(config Config){
 	addres = config.Addres
@@ -74,8 +75,5 @@ func DecrementEventUsers(id int64) (uinf *EventInfo,err  error) {
 
 func DecrementEventUsersAsync(id int64) (err  error) {
 	DecrementEventsCounter(id)
-	if err != nil {
-		return
-	}
 	return
 }

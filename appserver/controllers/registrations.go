@@ -29,7 +29,9 @@ func RegistrateMe(c *gin.Context) {
 	eventData, err := eventsclient.IncrementEventUsers(key)
 	if err != nil {
 		log.Print(err.Error())
-		c.JSON(http.StatusNotFound, views.Error{err.Error()})
+		err = eventsclient.ErrorTransform(err)
+		code := eventsclient.StatusCodeFromError(err)
+		c.JSON(code, views.Error{err.Error()})
 		return
 	}
 	defer func(){
@@ -44,7 +46,9 @@ func RegistrateMe(c *gin.Context) {
 	userData, err := userclient.IncrementEventsCounter(user)
 	if err != nil {
 		log.Print(err.Error())
-		c.JSON(http.StatusNotFound, views.Error{err.Error()})
+		err = userclient.ErrorTransform(err)
+		code := userclient.StatusCodeFromError(err)
+		c.JSON(code, views.Error{err.Error()})
 		return
 	}
 
@@ -61,7 +65,9 @@ func RegistrateMe(c *gin.Context) {
 	regdata, err := registrationclient.AddRegistration(userData.Name, eventData.Id)
 	if err != nil {
 		log.Print(err.Error())
-		c.JSON(http.StatusNotFound, views.Error{err.Error()})
+		err = registrationclient.ErrorTransform(err)
+		code := registrationclient.StatusCodeFromError(err)
+		c.JSON(code, views.Error{err.Error()})
 		return
 	}
 	res := views.AllRegInfo{regdata.Id,
@@ -99,29 +105,31 @@ func RemoveRegistration(c *gin.Context) {
 	md := metadata.Pairs("token", strTok)
 	regdata, err := registrationclient.RemoveRegistration(key, md)
 	if err != nil {
-		log.Print(err.Error())
-		c.JSON(http.StatusNotFound, views.Error{err.Error()})
+		log.Print( err.Error())
+		err = registrationclient.ErrorTransform(err)
+		code := registrationclient.StatusCodeFromError(err)
+		c.JSON(code, views.Error{err.Error()})
 		return
 	}
 	err = eventsclient.DecrementEventUsersAsync(regdata.EventId)
 	if err != nil {
-		log.Print(err.Error())
-		c.JSON(http.StatusNotFound, views.Error{err.Error()})
+		log.Print( err.Error())
+		err = eventsclient.ErrorTransform(err)
+		code := eventsclient.StatusCodeFromError(err)
+		c.JSON(code, views.Error{err.Error()})
 		return
 	}
-	userData, err := userclient.DecrementEventsCounter(user)
+	err = userclient.DecrementEventsCounterAsync(user)
 	if err != nil {
 		log.Print(err.Error())
-		c.JSON(http.StatusNotFound, views.Error{err.Error()})
+		err = userclient.ErrorTransform(err)
+		code := userclient.StatusCodeFromError(err)
+		c.JSON(code, views.Error{err.Error()})
 		return
 	}
-	res := views.AllRegInfo2{regdata.Id,
+	res := views.AllRegInfoAsync{regdata.Id,
 		regdata.EventId,
-		views.UserInfo{
-			userData.Name,
-			userData.Count,
-			userData.Id,
-		},
+		regdata.UserId,
 	}
 	c.JSON(http.StatusOK, res)
 }
@@ -137,7 +145,9 @@ func GetRegisrationInfo(c *gin.Context){
 	info, err := registrationclient.GetRegistrationInfo(key)
 	if err != nil {
 		log.Print(err.Error())
-		c.JSON(http.StatusNotFound, views.Error{err.Error()})
+		err = registrationclient.ErrorTransform(err)
+		code := registrationclient.StatusCodeFromError(err)
+		c.JSON(code, views.Error{err.Error()})
 		return
 	}
 	inf = views.RegistrationInfo{
@@ -164,7 +174,9 @@ func GetRegistrations(c *gin.Context){
 	res, err := registrationclient.GetRegistrations(id,pnum,1)
 	if err != nil {
 		log.Print(err.Error())
-		c.JSON(http.StatusNotFound, views.Error{err.Error()})
+		err = registrationclient.ErrorTransform(err)
+		code := registrationclient.StatusCodeFromError(err)
+		c.JSON(code, views.Error{err.Error()})
 		return
 	}
 	for _, i := range res{

@@ -22,6 +22,9 @@ type RegistrationInfo struct {
 
 var addres string
 
+var ConnectionError = fmt.Errorf("Can't connect to Registrations")
+
+
 func SetConfigs(config Config){
 	addres = config.Addres
 	log.Print(fmt.Sprintf("used to reg service %s", addres))
@@ -30,6 +33,7 @@ func SetConfigs(config Config){
 func AddRegistration(userId string,  eventId int64) (infoV RegistrationInfo, err error){
 	conn, err := grpc.Dial(addres, grpc.WithInsecure())
 	if err != nil {
+		err = ConnectionError
 		return
 	}
 	cli := regserver.NewRegistrationServiceClient(conn)
@@ -48,6 +52,7 @@ func AddRegistration(userId string,  eventId int64) (infoV RegistrationInfo, err
 func GetRegistrationInfo(id int64) (infoV RegistrationInfo, err error){
 	conn, err := grpc.Dial(addres, grpc.WithInsecure())
 	if err != nil {
+		err = ConnectionError
 		return
 	}
 	cli := regserver.NewRegistrationServiceClient(conn)
@@ -66,6 +71,7 @@ func GetRegistrationInfo(id int64) (infoV RegistrationInfo, err error){
 func RemoveRegistration(id int64, md metadata.MD) (infoV RegistrationInfo, err error){
 	conn, err := grpc.Dial(addres, grpc.WithInsecure())
 	if err != nil {
+		err = ConnectionError
 		return
 	}
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
@@ -85,6 +91,7 @@ func RemoveRegistration(id int64, md metadata.MD) (infoV RegistrationInfo, err e
 func GetRegistrations(id string, pageNum int64, pageSize int64)(info []RegistrationInfo, err error){
 	conn, err := grpc.Dial(addres, grpc.WithInsecure())
 	if err != nil {
+		err = ConnectionError
 		return
 	}
 	cli := regserver.NewRegistrationServiceClient(conn)

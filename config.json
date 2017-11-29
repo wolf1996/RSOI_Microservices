@@ -1,7 +1,12 @@
 {
   "port":":8080",
   "user_info_service": {
-    "addres":"127.0.0.1:8000"
+    "addres":"127.0.0.1:8000",
+    "users_rabbit" : {
+      "user" : "guest",
+      "password" : "guest",
+      "addres" : "127.0.0.1:5672"
+    }
   },
   "event_info_service": {
     "addres":"127.0.0.1:8001",

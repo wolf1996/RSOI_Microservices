@@ -20,7 +20,9 @@ func GetEventInfo(c *gin.Context) {
 	info, err := eventsclient.GetEventInfo(key)
 	if err != nil {
 		log.Print(err.Error())
-		c.JSON(http.StatusNotFound, views.Error{err.Error()})
+		err = eventsclient.ErrorTransform(err)
+		code := eventsclient.StatusCodeFromError(err)
+		c.JSON(code, views.Error{err.Error()})
 		return
 	}
 	inf = views.EventInfo{
