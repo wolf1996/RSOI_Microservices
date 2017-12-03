@@ -23,6 +23,11 @@ type DatabaseConfig struct {
 
 var db *sql.DB
 
+var (
+	EmptyResult = fmt.Errorf("Empty result")
+	AddError = fmt.Errorf("Addition error")
+)
+
 
 func ApplyConfig(config DatabaseConfig) (err error) {
 	dbinfo := fmt.Sprintf("postgres://%s:%s@%s/%s",
@@ -40,8 +45,12 @@ func IncrementEventUserCounter(id int64) (info EventInfo, err error) {
 	}
 	defer rows.Close()
 	if !rows.Next() {
-		err= fmt.Errorf("ERROR: Нет такого ивента %d",id)
-		log.Print(err.Error())
+		dbErr := rows.Err()
+		if dbErr == nil {
+			err = AddError
+			return
+		}
+		err = fmt.Errorf("ERROR: %s", dbErr.Error())
 		return
 	}
 	err = rows.Scan(&info.Id, &info.Owner, &info.PartCount, &info.Description)
@@ -61,8 +70,12 @@ func DecrementEventUserCounter(id int64) (info EventInfo, err error) {
 	}
 	defer rows.Close()
 	if !rows.Next() {
-		err= fmt.Errorf("ERROR: Нет такого ивента %d",id)
-		log.Print(err.Error())
+		dbErr := rows.Err()
+		if dbErr == nil {
+			err = AddError
+			return
+		}
+		err = fmt.Errorf("ERROR: %s", dbErr.Error())
 		return
 	}
 	err = rows.Scan(&info.Id, &info.Owner, &info.PartCount, &info.Description)
@@ -81,8 +94,12 @@ func GetEventInfo(id int64)(info EventInfo, err error){
 	}
 	defer rows.Close()
 	if !rows.Next() {
-		err= fmt.Errorf("ERROR: Нет такого ивента %d",id)
-		log.Print(err.Error())
+		dbErr := rows.Err()
+		if dbErr == nil {
+			err = EmptyResult
+			return
+		}
+		err = fmt.Errorf("ERROR: %s", dbErr.Error())
 		return
 	}
 	err = rows.Scan(&info.Id, &info.Owner, &info.PartCount, &info.Description)
