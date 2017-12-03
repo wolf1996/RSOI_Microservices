@@ -24,6 +24,7 @@ func applyConfig(config Config){
 func StartApplication(config Config){
 	applyConfig(config)
 	lis, err := net.Listen("tcp", port)
+	log.Printf("Starting on %s", port)	
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
