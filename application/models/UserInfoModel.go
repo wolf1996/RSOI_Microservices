@@ -4,7 +4,6 @@ import (
 	_ "github.com/lib/pq"
 	"database/sql"
 	"fmt"
-	"log"
 )
 
 type DatabaseConfig struct {
@@ -14,14 +13,18 @@ type DatabaseConfig struct {
 	DatabaseAddres string
 }
 
-
-var db *sql.DB
-
 type UserInfo struct {
 	Id 	  int64
 	Name string
 	Count int64
 }
+
+var db *sql.DB
+
+var (
+	EmptyResult = fmt.Errorf("Empty result")
+	AddError = fmt.Errorf("Addition error")
+)
 
 func ApplyConfig(config DatabaseConfig) (err error) {
 	dbinfo := fmt.Sprintf("postgres://%s:%s@%s/%s",
@@ -35,18 +38,20 @@ func ApplyConfig(config DatabaseConfig) (err error) {
 func IncrementUserEventCounter(id string) (inf UserInfo, err error) {
 	rows, err := db.Query("UPDATE USER_INFO SET EVENTS_NUMBER = EVENTS_NUMBER + 1 WHERE username = $1 RETURNING *;", id)
 	if err!=nil {
-		log.Print(err.Error())
 		return
 	}
 	defer rows.Close()
 	if !rows.Next() {
-		err= fmt.Errorf("ERROR: Нет такого ивента %d",id)
-		log.Print(err.Error())
+		dbErr := rows.Err()
+		if dbErr == nil {
+			err = EmptyResult
+			return
+		}
+		err = fmt.Errorf("ERROR: %s", dbErr.Error())
 		return
 	}
 	err = rows.Scan(&inf.Id , &inf.Name, &inf.Count)
 	if err != nil {
-		log.Print(err.Error())
 		return
 	}
 	return
@@ -55,18 +60,20 @@ func IncrementUserEventCounter(id string) (inf UserInfo, err error) {
 func GetUserInfo(login string) (inf UserInfo, err error) {
 	rows, err := db.Query("SELECT * FROM USER_INFO WHERE username = $1", login)
 	if err!=nil{
-		log.Print(err.Error())
 		return
 	}
 	defer rows.Close()
 	if !rows.Next() {
-		err= fmt.Errorf("ERROR: Нет такого пользователя %s",login)
-		log.Print(err.Error())
+		dbErr := rows.Err()
+		if dbErr == nil {
+			err = AddError
+			return
+		}
+		err = fmt.Errorf("ERROR: %s", dbErr.Error())
 		return
 	}
 	err =  rows.Scan(&inf.Id , &inf.Name, &inf.Count)
 	if err != nil {
-		log.Print(err.Error())
 		return
 	}
 	return
@@ -76,18 +83,20 @@ func GetUserInfo(login string) (inf UserInfo, err error) {
 func DecrementUserEventCounter(id string) (inf UserInfo, err error) {
 	rows, err := db.Query("UPDATE USER_INFO SET EVENTS_NUMBER = (CASE WHEN EVENTS_NUMBER > 0 THEN (EVENTS_NUMBER - 1) ELSE 0 END) WHERE username = $1 RETURNING *;", id)
 	if err!=nil {
-		log.Print(err.Error())
 		return
 	}
 	defer rows.Close()
 	if !rows.Next() {
-		err= fmt.Errorf("ERROR: Нет такого ивента %d",id)
-		log.Print(err.Error())
+		dbErr := rows.Err()
+		if dbErr == nil {
+			err = AddError
+			return
+		}
+		err = fmt.Errorf("ERROR: %s", dbErr.Error())
 		return
 	}
 	err = rows.Scan(&inf.Id , &inf.Name, &inf.Count)
 	if err != nil {
-		log.Print(err.Error())
 		return
 	}
 	return

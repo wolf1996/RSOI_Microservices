@@ -26,6 +26,7 @@ func StartApplication(config Config){
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+	log.Printf("Starting on %s", port)
 	grpcServer := grpc.NewServer()
 	server.RegisterUserServiceServer(grpcServer, &UserInfoServer{})
 	grpcServer.Serve(lis)
