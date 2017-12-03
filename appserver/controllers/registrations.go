@@ -29,8 +29,7 @@ func RegistrateMe(c *gin.Context) {
 	eventData, err := eventsclient.IncrementEventUsers(key)
 	if err != nil {
 		log.Print(err.Error())
-		err = eventsclient.ErrorTransform(err)
-		code := eventsclient.StatusCodeFromError(err)
+		err, code := eventsclient.ErrorTransform(err)
 		c.JSON(code, views.Error{err.Error()})
 		return
 	}
@@ -46,8 +45,7 @@ func RegistrateMe(c *gin.Context) {
 	userData, err := userclient.IncrementEventsCounter(user)
 	if err != nil {
 		log.Print(err.Error())
-		err = userclient.ErrorTransform(err)
-		code := userclient.StatusCodeFromError(err)
+		err, code := userclient.ErrorTransform(err)
 		c.JSON(code, views.Error{err.Error()})
 		return
 	}
@@ -65,8 +63,7 @@ func RegistrateMe(c *gin.Context) {
 	regdata, err := registrationclient.AddRegistration(userData.Name, eventData.Id)
 	if err != nil {
 		log.Print(err.Error())
-		err = registrationclient.ErrorTransform(err)
-		code := registrationclient.StatusCodeFromError(err)
+		err, code := registrationclient.ErrorTransform(err)
 		c.JSON(code, views.Error{err.Error()})
 		return
 	}
@@ -82,7 +79,7 @@ func RegistrateMe(c *gin.Context) {
 				userData.Id,
 			},
 	}
-	c.JSON(http.StatusOK, res)
+	c.JSON(http.StatusCreated, res)
 }
 
 
@@ -106,24 +103,21 @@ func RemoveRegistration(c *gin.Context) {
 	regdata, err := registrationclient.RemoveRegistration(key, md)
 	if err != nil {
 		log.Print( err.Error())
-		err = registrationclient.ErrorTransform(err)
-		code := registrationclient.StatusCodeFromError(err)
+		err, code := registrationclient.ErrorTransform(err)
 		c.JSON(code, views.Error{err.Error()})
 		return
 	}
 	err = eventsclient.DecrementEventUsersAsync(regdata.EventId)
 	if err != nil {
 		log.Print( err.Error())
-		err = eventsclient.ErrorTransform(err)
-		code := eventsclient.StatusCodeFromError(err)
+		err, code := eventsclient.ErrorTransform(err)
 		c.JSON(code, views.Error{err.Error()})
 		return
 	}
 	err = userclient.DecrementEventsCounterAsync(user)
 	if err != nil {
 		log.Print(err.Error())
-		err = userclient.ErrorTransform(err)
-		code := userclient.StatusCodeFromError(err)
+		err, code := userclient.ErrorTransform(err)
 		c.JSON(code, views.Error{err.Error()})
 		return
 	}
@@ -145,8 +139,7 @@ func GetRegisrationInfo(c *gin.Context){
 	info, err := registrationclient.GetRegistrationInfo(key)
 	if err != nil {
 		log.Print(err.Error())
-		err = registrationclient.ErrorTransform(err)
-		code := registrationclient.StatusCodeFromError(err)
+		err, code := registrationclient.ErrorTransform(err)
 		c.JSON(code, views.Error{err.Error()})
 		return
 	}
@@ -174,8 +167,7 @@ func GetRegistrations(c *gin.Context){
 	res, err := registrationclient.GetRegistrations(id,pnum,1)
 	if err != nil {
 		log.Print(err.Error())
-		err = registrationclient.ErrorTransform(err)
-		code := registrationclient.StatusCodeFromError(err)
+		err, code := registrationclient.ErrorTransform(err)
 		c.JSON(code, views.Error{err.Error()})
 		return
 	}

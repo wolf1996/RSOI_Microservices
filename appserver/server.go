@@ -44,7 +44,7 @@ func StartServer(config GatewayConfig) error {
 	auth.POST("/events/:event_id/register", controllers.RegistrateMe)
 	auth.GET("/user/registrations/:pagenum", controllers.GetRegistrations)
 	auth.GET("/user/registrations/", controllers.GetRegistrations)
-	auth.POST("/registrations/:registration_id/remove", controllers.RemoveRegistration)
+	auth.DELETE("/registrations/:registration_id/remove", controllers.RemoveRegistration)
 
 	auth.GET("/user/info", controllers.GetUserInfo)
 	router.GET("/events/:event_id", controllers.GetEventInfo)

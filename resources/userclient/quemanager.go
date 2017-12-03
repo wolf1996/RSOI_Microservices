@@ -49,7 +49,7 @@ func UserEventsDecrementCounter(userId string) (err error){
 }
 
 func ApplyConfig(conf QConfig)(err error){
-	log.Printf("User: %s, Addres: %s", conf.User, conf.Pass)
+	log.Printf("User: %s, Addres: %s", conf.User, conf.RabbitAddres)
 	conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s/",conf.User, conf.Pass, conf.RabbitAddres))
 	if err != nil {
 		log.Fatal(err.Error())

@@ -14,8 +14,7 @@ func GetUserInfo(c *gin.Context) {
 	res, err := userclient.GetUserInfo(id)
 	if err != nil {
 		log.Printf("Errpr %s", err.Error())
-		err = userclient.ErrorTransform(err)
-		code := userclient.StatusCodeFromError(err)
+		err, code := userclient.ErrorTransform(err)
 		c.JSON(code, views.Error{err.Error()})
 		return
 	}

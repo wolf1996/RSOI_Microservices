@@ -7,28 +7,34 @@ import (
 	"net/http"
 )
 
-var SomeServiceError = fmt.Errorf("Some service error")
+var(
+	SomeServiceError = fmt.Errorf("Some service error")
+	NotFound = fmt.Errorf("Not Found")
+)
 
-func ErrorTransform(transError error) (err error){
+
+
+func statusToHttp(stat *status.Status)(err error, code int){
+	switch stat.Code() {
+	case codes.NotFound:
+		return NotFound, http.StatusNotFound
+	case codes.InvalidArgument:
+		return fmt.Errorf(stat.Message()), http.StatusBadRequest
+	default:
+		return SomeServiceError, http.StatusInternalServerError
+	}
+}
+
+func ErrorTransform(transError error) (err error, code int){
 	err = transError
 	if transError == ConnectionError{
 		err = SomeServiceError
+		code = http.StatusServiceUnavailable
 	} else {
 		if resp,ok  := status.FromError(transError);ok {
-			if resp.Code() != codes.OK {
-				err = SomeServiceError
-			}
+			return statusToHttp(resp)
 		}
 	}
 	return
 }
 
-func StatusCodeFromError(err error) int{
-	if err == nil {
-		return http.StatusOK
-	}
-	if err == SomeServiceError {
-		return http.StatusGatewayTimeout
-	}
-	return http.StatusNotFound
-}
