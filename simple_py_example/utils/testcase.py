@@ -18,7 +18,7 @@ def registre_user(session, event_id):
     return session.post("http://127.0.0.1:8080/events/{}/register".format(event_id))
 
 def remove_reg(session, reg_id):
-    return session.post("http://127.0.0.1:8080/registrations/{}/remove".format(reg_id))
+    return session.delete("http://127.0.0.1:8080/registrations/{}/remove".format(reg_id))
 
 def registrations(session, page_num = None):
     if page_num is None:
