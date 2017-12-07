@@ -1,0 +1,55 @@
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/navbar.css">
+    <link rel="stylesheet" href="/static/table.css">
+    <link rel="stylesheet" href="/static/pagination.css">
+    <link rel="stylesheet" href="/static/pagebtn.css">
+</head>
+<body>
+<div class="topnav" id="myTopnav">
+    <a href="/events/1">Events</a>
+    <a href="/user_info">Users</a>
+    <a class="active" >My Regs</a>
+</div>
+<div class="btn-group">
+
+    <a href="/user_regs/1?pagesize=1" class="button">1</a>
+    <a href="/user_regs/1?pagesize=2" class="button">2</a>
+    <a href="/user_regs/1?pagesize=5" class="button">5</a>
+</div>
+<br>
+<br>
+<table>
+    <tr>
+        <th>Описание</th>
+        <th>Количество участников</th>
+        <th>Владелец</th>
+    </tr>
+{{range $i, $x := $.regs}}
+    <tr>
+        <th><a href=/event/{{$x.EventId}}>{{$x.EventId}}</a></th>
+        <th>{{$x.UserId}}</th>
+        <th>
+            <form action = "/regs/remove" method = "post">
+                <input type="submit" name="reg" value={{$x.Id}}  />
+            </form>
+        </th>
+        <th></th>
+    </tr>
+{{end}}
+</table>
+
+<div class="pagination">
+{{if gt $.pagenum 1}}
+    <a href="/user_regs/{{$.pagenumPr}}/?pagesize={{$.pageSize}}">&laquo;</a>
+{{end}}
+    <a href="/user_regs/{{$.pagenumN}}/?pagesize={{$.pageSize}}">&raquo;</a>
+</div>
+
+</body>
+</html>
