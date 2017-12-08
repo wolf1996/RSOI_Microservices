@@ -1,23 +1,12 @@
-
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-    <title>Title</title>
-    <link rel="stylesheet" href="/static/navbar.css">
-    <link rel="stylesheet" href="/static/table.css">
-    <link rel="stylesheet" href="/static/pagination.css">
-    <link rel="stylesheet" href="/static/pagebtn.css">
-</head>
-<body>
-<div class="topnav" id="myTopnav">
-    <a class="active">Events</a>
-    <a href="/user_info">Users</a>
-    <a href="/user_regs">My Regs</a>
-</div>
+{{define "title"}}
+<title>Title</title>
+<link rel="stylesheet" href="/static/navbar.css">
+<link rel="stylesheet" href="/static/table.css">
+<link rel="stylesheet" href="/static/pagination.css">
+<link rel="stylesheet" href="/static/pagebtn.css">
+{{end}}
+{{define "content"}}
 <div class="btn-group">
-
     <a href="/events/1?pagesize=1" class="button">1</a>
     <a href="/events/1?pagesize=2" class="button">2</a>
     <a href="/events/1?pagesize=5" class="button">5</a>
@@ -46,11 +35,9 @@
 </table>
 
 <div class="pagination">
-    {{if gt $.pagenum 1}}
+{{if gt $.pagenum 1}}
     <a href="/events/{{$.pagenumPr}}/?pagesize={{$.pageSize}}">&laquo;</a>
-    {{end}}
+{{end}}
     <a href="/events/{{$.pagenumN}}/?pagesize={{$.pageSize}}">&raquo;</a>
 </div>
-
-</body>
-</html>
+{{end}}

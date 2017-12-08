@@ -1,21 +1,11 @@
-
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-    <title>Title</title>
-    <link rel="stylesheet" href="/static/navbar.css">
-    <link rel="stylesheet" href="/static/table.css">
-    <link rel="stylesheet" href="/static/pagination.css">
-    <link rel="stylesheet" href="/static/pagebtn.css">
-</head>
-<body>
-<div class="topnav" id="myTopnav">
-    <a href="/events/1">Events</a>
-    <a href="/user_info">Users</a>
-    <a class="active" >My Regs</a>
-</div>
+{{define "title"}}
+<title>Title</title>
+<link rel="stylesheet" href="/static/navbar.css">
+<link rel="stylesheet" href="/static/table.css">
+<link rel="stylesheet" href="/static/pagination.css">
+<link rel="stylesheet" href="/static/pagebtn.css">
+{{end}}
+{{define "content"}}
 <div class="btn-group">
 
     <a href="/user_regs/1?pagesize=1" class="button">1</a>
@@ -50,6 +40,4 @@
 {{end}}
     <a href="/user_regs/{{$.pagenumN}}/?pagesize={{$.pageSize}}">&raquo;</a>
 </div>
-
-</body>
-</html>
+{{end}}

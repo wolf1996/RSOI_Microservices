@@ -10,7 +10,7 @@ func parseViper() application.Config {
 	viper.ReadInConfig()
 	port := viper.GetString("port")
 	backend := viper.GetString("backend")
-	templates := viper.GetString("templates")
+	templates := viper.GetString("templates2")
 	static := viper.GetString("static")
 	return application.Config{port, static, backend, templates}
 }

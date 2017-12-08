@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"net/http"
 	"github.com/wolf1996/frontend/application/view"
-	"github.com/wolf1996/gateway/appserver/views"
 	"github.com/gin-gonic/gin/binding"
 )
 
@@ -30,14 +29,12 @@ func EventsList(c *gin.Context){
 	pasize,err := strconv.ParseInt(psize, 10, 64)
 	if err != nil {
 		log.Print(err.Error())
-		c.JSON(http.StatusBadRequest, views.Error{err.Error()})
 		return
 	}
 	var inf []gatewayview.EventInfo
 	inf, req, err := client.GetEvents(pnum, pasize)
 	if err != nil {
 		log.Print(err.Error())
-		c.JSON(http.StatusBadRequest, views.Error{err.Error()})
 		return
 	}
 	bts, err := json.Marshal(inf)
@@ -99,7 +96,6 @@ func GetUserRegistrations(c *gin.Context){
 	pasize,err := strconv.ParseInt(psize, 10, 64)
 	if err != nil {
 		log.Print(err.Error())
-		c.JSON(http.StatusBadRequest, views.Error{err.Error()})
 	}
 	var inf []gatewayview.RegistrationInfo
 	inf, req, err := client.GetUserRegistrations(pnum, pasize)

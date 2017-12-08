@@ -1,6 +1,6 @@
 {
   "port":":8081",
   "backend":"http://127.0.0.1:8080",
-  "templates":"/home/ksg/disk_d/labs2017M/RSOI/2/src/github.com/wolf1996/frontend/application/template/*",
+  "templates":"/home/ksg/disk_d/labs2017M/RSOI/2/src/github.com/wolf1996/frontend/templates/",
   "static":"/home/ksg/disk_d/labs2017M/RSOI/2/src/github.com/wolf1996/frontend/static"
 }
