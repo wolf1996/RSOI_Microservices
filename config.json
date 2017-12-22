@@ -1,5 +1,7 @@
 {
   "port":":8001",
+  "crt": "/home/ksg/disk_d/labs2017M/RSOI/2/security/event/server.crt",
+  "key": "/home/ksg/disk_d/labs2017M/RSOI/2/security/event/server.key",
   "database":{
     "addres":"127.0.0.1",
     "username":"events_user",

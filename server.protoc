@@ -14,16 +14,17 @@ message EventId{
 }
 
 message EventsRequest{
-    int64 userId = 1;
-    int64 pageSize = 2;
-    int64 pageNumber = 3;
+    int64 pageSize = 1;
+    int64 pageNumber = 2;
+    string userId = 3;
 }
+
 
 service EventService {
     rpc GetEventInfo(EventId) returns (EventInfo){};
     rpc IncrementUsersNumber(EventId) returns (EventInfo){};
     rpc DecrementUsersNumber(EventId) returns (EventInfo){};
-    // rpc GetEvents(stream EventId) returns (stream EventInfo){};
+    rpc GetEvents(EventsRequest) returns (stream EventInfo){};
 }
 
 //protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:server ./server.protoc

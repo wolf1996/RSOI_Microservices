@@ -2,7 +2,7 @@ package application
 
 import (
 	"log"
-	
+
 	"golang.org/x/net/context"
 	"github.com/wolf1996/events/server"
 	"github.com/wolf1996/events/application/models"
@@ -78,6 +78,29 @@ func (inst *GrpcEventsServerInstance)DecrementUsersNumber(cont context.Context,i
 		inf.Owner,
 		inf.PartCount,
 		inf.Description,
+	}
+	return
+}
+
+func (inst *GrpcEventsServerInstance)GetEvents(req *server.EventsRequest, stream server.EventService_GetEventsServer)(err error){
+	if req.PageNumber <= 0 {
+		return grpc.Errorf(codes.InvalidArgument ,"Invalid page name %s", req.PageSize)		
+	}
+	if req.PageSize <= 0 {
+		return grpc.Errorf(codes.InvalidArgument ,"Invalid page size %s", req.PageSize)
+	}
+	err = models.GetEvents(req.UserId, req.PageNumber-1, req.PageSize, stream)
+	if err != nil {
+		log.Printf(err.Error())
+		switch err {
+		case models.EmptyResult:
+			err =  grpc.Errorf(codes.NotFound, "Empty result")
+		case models.AddError:
+			err =  grpc.Errorf(codes.NotFound, "Can't add registration")
+		default:
+			err =  grpc.Errorf(codes.Unknown , "server Error")
+		}
+		return
 	}
 	return
 }

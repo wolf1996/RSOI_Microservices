@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/wolf1996/events/server"
 	_ "github.com/lib/pq"
 	"database/sql"
 	"fmt"
@@ -104,8 +105,53 @@ func GetEventInfo(id int64)(info EventInfo, err error){
 	}
 	err = rows.Scan(&info.Id, &info.Owner, &info.PartCount, &info.Description)
 	if err != nil {
-		log.Print(err.Error())
 		return
+	}
+	return
+}
+
+func GetEvents(userId string, pageNumber int64, pageSize int64, stream server.EventService_GetEventsServer)(err error){
+	var params []interface{}
+	ind := 1
+	qr := "SELECT * FROM events_info "
+	if userId != ""{
+		qr+= fmt.Sprintf(" WHERE userId = $%d ", ind)
+		ind += 1		
+		params = append(params, userId)
+		log.Print("found param")
+	}
+	qr += fmt.Sprintf(" OFFSET $%d LIMIT $%d ; ", ind, ind+1)
+	params = append(params, pageNumber*pageSize)	
+	params = append(params, pageSize)
+	log.Print(qr)		
+	rows, err := db.Query(qr, params...)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+	var info server.EventInfo
+	if !rows.Next() {
+		dbErr := rows.Err()
+		if dbErr == nil {
+			err = EmptyResult
+			return
+		}
+		err = fmt.Errorf("ERROR: %s", dbErr.Error())
+		return
+	}
+	for {
+		// проверить чтоб не отваливалось
+		rows.Scan(&info.Id, &info.Name, &info.Participants, &info.Description)
+		if err != nil {
+			return
+		}
+		stream.Send(&info)
+		if err != nil {
+			return
+		}
+		if !rows.Next() {
+			break
+		}
 	}
 	return
 }
