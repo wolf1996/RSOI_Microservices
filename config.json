@@ -5,5 +5,7 @@
     "username":"usersuser",
     "password":"123456",
     "dbname":"usersdb"
-  }
+  },
+  "crt": "/home/ksg/disk_d/labs2017M/RSOI/2/security/user/server.crt",
+  "key": "/home/ksg/disk_d/labs2017M/RSOI/2/security/user/server.key"
 }

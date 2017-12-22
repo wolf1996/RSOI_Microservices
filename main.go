@@ -16,7 +16,9 @@ func parseViper() application.Config {
 	pass := viper.GetString("database.password")
 	dbname := viper.GetString("database.dbname")
 	addres := viper.GetString("database.addres")
-	return application.Config{port, models.DatabaseConfig{
+	crt :=  viper.GetString("crt")
+	key :=  viper.GetString("key")
+	return application.Config{port, crt,key,models.DatabaseConfig{
 		database_user,pass, dbname, addres,
 	}}
 }
