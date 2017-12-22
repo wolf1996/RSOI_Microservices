@@ -1,5 +1,7 @@
 {
   "port":":8002",
+  "crt": "/home/ksg/disk_d/labs2017M/RSOI/2/security/registration/server.crt",
+  "key": "/home/ksg/disk_d/labs2017M/RSOI/2/security/registration/server.key",
   "database":{
     "addres":"127.0.0.1",
     "username":"regs_user",

@@ -37,7 +37,7 @@ func ApplyConfig(config DatabaseConfig) (err error) {
 }
 
 func AddRegistration(userId string, eventId int64) (inf RegistrationInfo, err error) {
-	rows, err := db.Query("INSERT INTO RSOI_REGS VALUES  (DEFAULT, $1,$2) RETURNING *;", eventId, userId)
+	rows, err := db.Query("INSERT INTO RSOI_REGS (EVENT_ID, USER_ID) SELECT $1, CAST($2 AS VARCHAR) WHERE NOT EXISTS (SELECT * FROM RSOI_REGS WHERE EVENT_ID = $1 AND USER_ID = $2 ) RETURNING *;", eventId, userId)
 	if err != nil {
 		return
 	}

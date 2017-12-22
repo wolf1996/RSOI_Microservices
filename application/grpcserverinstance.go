@@ -20,7 +20,9 @@ type GprsServerInstance struct {
 func (inst GprsServerInstance) GetRegistrationInfo(cont context.Context, id *server.RegistrationId) (infV *server.RegistrationInfo, err error) {
 	infV = new(server.RegistrationInfo)
 	inf, err := models.GetRegistration(id.Id)
-	log.Print(err.Error())
+	if (err != nil) {
+		log.Print(err.Error())
+	}
 	switch err {
 	case models.EmptyResult:
 		err = grpc.Errorf(codes.NotFound, "Can't find any registrations") 
