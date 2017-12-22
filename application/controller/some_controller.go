@@ -20,6 +20,7 @@ func EventsList(c *gin.Context){
 	pnum,err := strconv.ParseInt(strparam, 10, 64)
 	if err != nil {
 		log.Print(err.Error())
+		c.HTML(http.StatusBadRequest,"error.html", gin.H{"error": err.Error(),})
 		return
 	}
 	psize := c.Query("pagesize")
@@ -29,18 +30,19 @@ func EventsList(c *gin.Context){
 	pasize,err := strconv.ParseInt(psize, 10, 64)
 	if err != nil {
 		log.Print(err.Error())
+		c.HTML(http.StatusBadRequest,"error.html", gin.H{"error": err.Error(),})
 		return
 	}
 	var inf []gatewayview.EventInfo
 	inf, req, err := client.GetEvents(pnum, pasize)
 	if err != nil {
 		log.Print(err.Error())
+		c.HTML(req.StatusCode,"error.html", gin.H{"error": err.Error(),})
 		return
 	}
 	bts, err := json.Marshal(inf)
 	if err != nil {
 		log.Print(err.Error())
-		return
 	}
 	log.Print(string(bts[:]))
 	c.HTML(req.StatusCode,"eventslist.html",gin.H{"events":inf, "pagenum":pnum, "pagenumPr":pnum-1, "pagenumN":pnum+1, "pageSize": pasize})
@@ -51,16 +53,17 @@ func RegistreMe(c *gin.Context){
 	err := c.ShouldBindWith(&reg, binding.Form)
 	if err != nil {
 		log.Print(err.Error())
+		c.HTML(http.StatusForbidden,"error.html", gin.H{"error": err.Error(),})
 		return
 	}
 	log.Print(c.Request)
 	resp, err := client.RegistreMe(reg.EventId)
 	if err != nil{
 		log.Print(err.Error())
-		c.Status(resp.StatusCode)
+		c.HTML(resp.StatusCode,"error.html", gin.H{"error": err.Error(),})
 		return
 	}
-	c.Redirect(http.StatusSeeOther, "http://127.0.0.1:8081/events/1")
+	c.Redirect(http.StatusSeeOther, "/events/1")
 }
 
 func GetUserInfo(c *gin.Context) {
@@ -68,11 +71,13 @@ func GetUserInfo(c *gin.Context) {
 	inf, req, err := client.UserInfo()
 	if err != nil {
 		log.Print(err.Error())
+		c.HTML(req.StatusCode,"error.html", gin.H{"error": err.Error(),})
 		return
 	}
 	bts, err := json.Marshal(inf)
 	if err != nil {
 		log.Print(err.Error())
+		c.HTML(http.StatusServiceUnavailable, "error.html", gin.H{"error":err.Error()})
 		return
 	}
 	log.Print(string(bts[:]))
@@ -87,6 +92,7 @@ func GetUserRegistrations(c *gin.Context){
 	pnum,err := strconv.ParseInt(strparam, 10, 64)
 	if err != nil {
 		log.Print(err.Error())
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error":err.Error()})
 		return
 	}
 	psize := c.Query("pagesize")
@@ -96,11 +102,15 @@ func GetUserRegistrations(c *gin.Context){
 	pasize,err := strconv.ParseInt(psize, 10, 64)
 	if err != nil {
 		log.Print(err.Error())
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error":err.Error()})
+		return
 	}
 	var inf []gatewayview.RegistrationInfo
 	inf, req, err := client.GetUserRegistrations(pnum, pasize)
 	if err != nil {
 		log.Print(err.Error())
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error":err.Error()})
+		return
 	}
 	bts, err := json.Marshal(inf)
 	if err != nil {
@@ -115,13 +125,14 @@ func RemoveReg(c *gin.Context){
 	err := c.ShouldBindWith(&reg, binding.Form)
 	if err != nil {
 		log.Print(err.Error())
+		c.HTML(http.StatusBadRequest, "error.html",gin.H{"error":err.Error()})
 		return
 	}
 	log.Print(c.Request)
 	resp, err := client.RemoveReg(reg.RegId)
 	if err != nil{
 		log.Print(err.Error())
-		c.JSON(resp.StatusCode, err)
+		c.HTML(resp.StatusCode, "error.html", gin.H{"error":err.Error()})
 		return
 	}
 	c.Redirect(http.StatusSeeOther, "http://127.0.0.1:8081/user_regs/1")
@@ -136,16 +147,19 @@ func GetEventInfo(c *gin.Context) {
 	enum,err := strconv.ParseInt(strparam, 10, 64)
 	if err != nil {
 		log.Print(err.Error())
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error":err.Error()})
 		return
 	}
 	inf, req, err := client.EventInfo(enum)
 	if err != nil {
 		log.Print(err.Error())
+		c.HTML(req.StatusCode, "error.html", gin.H{"error":err.Error()})
 		return
 	}
 	bts, err := json.Marshal(inf)
 	if err != nil {
 		log.Print(err.Error())
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error":err.Error()})
 		return
 	}
 	log.Print(string(bts[:]))
