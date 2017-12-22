@@ -1,9 +1,11 @@
 {
   "user_info_service": {
-    "addres":"127.0.0.1:8000"
+    "addres":"localhost:8000",
+    "crt":"/home/ksg/disk_d/labs2017M/RSOI/2/security/user/server.crt"
   },
   "event_info_service": {
-    "addres": "127.0.0.1:8001"
+    "addres": "localhost:8001",
+    "crt":"/home/ksg/disk_d/labs2017M/RSOI/2/security/event/server.crt"
   },
   "rabbit":{
     "user":"guest",

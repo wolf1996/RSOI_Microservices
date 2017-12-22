@@ -45,11 +45,12 @@ func StartServer(config GatewayConfig) error {
 	auth.GET("/user/registrations/:pagenum", controllers.GetRegistrations)
 	auth.GET("/user/registrations/", controllers.GetRegistrations)
 	auth.DELETE("/registrations/:registration_id/remove", controllers.RemoveRegistration)
-
+	auth.GET("/registrations/:registration_id", controllers.GetRegisrationInfo)	
 	auth.GET("/user/info", controllers.GetUserInfo)
-	router.GET("/events/:event_id", controllers.GetEventInfo)
-	router.GET("/registrations/:registration_id", controllers.GetRegisrationInfo)
 
+	router.GET("/event/:event_id", controllers.GetEventInfo)
+	router.GET("/events/:pagenum", controllers.GetEvents)
+	
 	router.Run(port)
 	return nil
 }

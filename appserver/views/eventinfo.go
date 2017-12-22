@@ -6,3 +6,7 @@ type EventInfo struct {
 	PartCount       int64  `json:"part_count"`
 	Description     string `json:"description"`
 }
+
+type EventsInfo struct {
+	Events          []EventInfo `json:"events"`
+}

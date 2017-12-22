@@ -1,17 +1,21 @@
 package registrationclient
 
 import (
+	"context"
+	"fmt"
+	"io"
+	"log"
+
+	"google.golang.org/grpc/credentials"
+
 	"github.com/wolf1996/gateway/regserver"
 	"google.golang.org/grpc"
-	"context"
-	"log"
-	"fmt"
 	"google.golang.org/grpc/metadata"
-	"io"
-	)
+)
 
-type Config struct{
+type Config struct {
 	Addres string
+	Crt    string
 }
 
 type RegistrationInfo struct {
@@ -21,17 +25,21 @@ type RegistrationInfo struct {
 }
 
 var addres string
-
+var creds credentials.TransportCredentials
 var ConnectionError = fmt.Errorf("Can't connect to Registrations")
 
-
-func SetConfigs(config Config){
+func SetConfigs(config Config) {
 	addres = config.Addres
 	log.Print(fmt.Sprintf("used to reg service %s", addres))
+	var err error
+	creds, err = credentials.NewClientTLSFromFile(config.Crt, "")
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
-func AddRegistration(userId string,  eventId int64) (infoV RegistrationInfo, err error){
-	conn, err := grpc.Dial(addres, grpc.WithInsecure())
+func AddRegistration(userId string, eventId int64) (infoV RegistrationInfo, err error) {
+	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError
 		return
@@ -49,8 +57,8 @@ func AddRegistration(userId string,  eventId int64) (infoV RegistrationInfo, err
 	return
 }
 
-func GetRegistrationInfo(id int64) (infoV RegistrationInfo, err error){
-	conn, err := grpc.Dial(addres, grpc.WithInsecure())
+func GetRegistrationInfo(id int64) (infoV RegistrationInfo, err error) {
+	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError
 		return
@@ -68,8 +76,8 @@ func GetRegistrationInfo(id int64) (infoV RegistrationInfo, err error){
 	return
 }
 
-func RemoveRegistration(id int64, md metadata.MD) (infoV RegistrationInfo, err error){
-	conn, err := grpc.Dial(addres, grpc.WithInsecure())
+func RemoveRegistration(id int64, md metadata.MD) (infoV RegistrationInfo, err error) {
+	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError
 		return
@@ -88,23 +96,23 @@ func RemoveRegistration(id int64, md metadata.MD) (infoV RegistrationInfo, err e
 	return
 }
 
-func GetRegistrations(id string, pageNum int64, pageSize int64)(info []RegistrationInfo, err error){
-	conn, err := grpc.Dial(addres, grpc.WithInsecure())
+func GetRegistrations(id string, pageNum int64, pageSize int64) (info []RegistrationInfo, err error) {
+	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError
 		return
 	}
 	cli := regserver.NewRegistrationServiceClient(conn)
-	infoStr, err := cli.GetUserRegistrations(context.Background(), &regserver.UsersRegistrationsRequest{id,pageSize,pageNum})
+	infoStr, err := cli.GetUserRegistrations(context.Background(), &regserver.UsersRegistrationsRequest{id, pageSize, pageNum})
 	if err != nil {
 		log.Print(err)
 		return
 	}
 	var inf *regserver.RegistrationInfo
 	for {
-		inf, err  = infoStr.Recv()
+		inf, err = infoStr.Recv()
 		if err != nil {
-			if err != io.EOF{
+			if err != io.EOF {
 				log.Print(err.Error())
 				return
 			}
