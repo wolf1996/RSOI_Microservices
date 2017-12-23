@@ -1,0 +1,38 @@
+syntax  = "proto3";
+
+
+package token;
+
+import public "token.proto";
+
+message Empty{};
+
+message AccessTokenMsg{
+    string tokenString = 1;
+}
+
+message RefreshTokenMsg{
+    string tokenString = 1;
+}
+
+message Tokenpair{
+    AccessTokenMsg accessToken = 1;
+    RefreshTokenMsg refreshToken = 2;
+}
+
+message SignInPair{
+    string login = 1;
+    string pass  = 2;
+}
+
+message ValidResult{
+    bool valid = 1;
+    Token tok  = 2;
+}
+
+service AuthService {
+    rpc GetAccessToken(RefreshTokenMsg) returns (AccessTokenMsg){};
+    rpc GetTokenpair(SignInPair) returns(Tokenpair){};
+    rpc AccessTokenValidation(AccessTokenMsg) returns (ValidResult) {};
+}
+

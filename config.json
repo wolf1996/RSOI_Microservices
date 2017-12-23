@@ -1,0 +1,23 @@
+{
+  "port":":8004",
+  "crt": "/home/ksg/disk_d/labs2017M/RSOI/2/security/auth/server.crt",
+  "key": "/home/ksg/disk_d/labs2017M/RSOI/2/security/auth/server.key",
+  "database":{
+    "addres":"127.0.0.1",
+    "username":"auth_user",
+    "password":"123456",
+    "dbname":"authdb",
+    "salt":"123456"
+  },
+  "storage":{
+    "addres":"127.0.0.1",
+    "username":"",
+    "password":"",
+    "dbname":""
+  },
+  "token":{
+    "salt":"123456",
+    "access_token_exparision":1000,
+    "refresh_token_exparision":1000
+  }
+}
