@@ -13,6 +13,11 @@ def test_all(test, sessions):
         test(user)
         print("###############################")
 
+def events_test(session):
+    print("events_test")
+    resp = testcase.events(session, 2)
+    print(resp.text)
+
 def hello_test(session):
     print("hello test")
     resp = testcase.get_user_hello(session)
@@ -63,10 +68,11 @@ def non_reg_tes():
     print(res.content) 
 
 def main():
-    users = {"simpleUser": "1", "eventOwner": "1",}
+    users = {"simpleUser": "123123", "eventOwner": "123456",}
     sessions = testcase.getNamedSessions(users)
     test_all(hello_test, sessions)
     test_all(user_info_test, sessions) 
+    test_all(events_test, sessions)
     print('########################')
     s_user_reg(sessions)
     print('########################')
