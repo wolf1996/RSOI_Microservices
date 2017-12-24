@@ -31,7 +31,7 @@ message ValidResult{
 }
 
 service AuthService {
-    rpc GetAccessToken(RefreshTokenMsg) returns (AccessTokenMsg){};
+    rpc GetAccessToken(RefreshTokenMsg) returns (Tokenpair){};
     rpc GetTokenpair(SignInPair) returns(Tokenpair){};
     rpc AccessTokenValidation(AccessTokenMsg) returns (ValidResult) {};
 }

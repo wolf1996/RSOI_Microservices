@@ -3,5 +3,6 @@ syntax  = "proto3";
 package token;
 
 message Token {
-    string Id = 1;
+    int64 Id = 2;
+    string LogIn = 3;
 }

@@ -28,6 +28,7 @@ var creds credentials.TransportCredentials
 func applyConfig(config Config) {
 	port = config.Port
 	models.ApplyConfig(config.DatabaseConf)
+	tokenanager.ApplyConfig(config.TokenConf)
 	var err error
 	creds, err = credentials.NewServerTLSFromFile(config.Crt, config.Key)
 	if err != nil {

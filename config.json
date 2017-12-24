@@ -18,6 +18,6 @@
   "token":{
     "salt":"123456",
     "access_token_exparision":1000,
-    "refresh_token_exparision":1514081844
+    "refresh_token_exparision":2000
   }
 }

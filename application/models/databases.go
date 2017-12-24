@@ -22,6 +22,7 @@ type LogIn struct {
 
 type UserInfo struct {
 	Id int64
+	LogIn string
 }
 
 var (
@@ -44,7 +45,7 @@ func ApplyConfig(config DatabaseConfig) (err error) {
 }
 
 func CheckPass(authdata LogIn) (result UserInfo, err error){
-	rows, err := db.Query("SELECT ID FROM AUTH_INFO WHERE LOGIN = $1 AND PASSHASH = crypt($2, $3)", authdata.Login, authdata.Pass, salt)
+	rows, err := db.Query("SELECT ID, LOGIN FROM AUTH_INFO WHERE LOGIN = $1 AND PASSHASH = crypt($2, $3)", authdata.Login, authdata.Pass, salt)
 	if err!=nil{
 		log.Print(err.Error())
 		return
@@ -59,6 +60,6 @@ func CheckPass(authdata LogIn) (result UserInfo, err error){
 		err = fmt.Errorf("ERROR: %s", dbErr.Error())
 		return
 	}
-	rows.Scan(&result.Id)
+	rows.Scan(&result.Id, &result.LogIn)
 	return
 }

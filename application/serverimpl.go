@@ -18,15 +18,16 @@ type AuthServerInstance struct {
 	RefreshTokenValidation(context.Context, *RefreshTokenMsg) (*ValidResult, error)
 	AccessTokenValidation(context.Context, *AccessTokenMsg) (*ValidResult, error)
  */
-func (inst *AuthServerInstance)GetAccessToken(cnt context.Context, rfrsh *token.RefreshTokenMsg) (msg *token.AccessTokenMsg,err error){
+func (inst *AuthServerInstance)GetAccessToken(cnt context.Context, rfrsh *token.RefreshTokenMsg) (msg *token.Tokenpair,err error){
 	tkn, err := tokenanager.ValidateRefreshToken(rfrsh.TokenString)
-	msg = &token.AccessTokenMsg{}
 	if err != nil {
 		log.Printf("ERROR:%s", err.Error())
 		err = status.Errorf(codes.InvalidArgument, "Token validation failed")
 	}
-	restoken, err := tokenanager.RefreshAccessToken(tkn)
-	msg.TokenString = restoken
+	actoken, err := tokenanager.RefreshAccessToken(tkn)
+	restoken, err := tokenanager.RefreshRefreshToken(tkn)
+	msg.RefreshToken = &token.RefreshTokenMsg{ restoken}
+	msg.AccessToken  = &token.AccessTokenMsg{ actoken}
 	return
 }
 
@@ -58,5 +59,14 @@ func (inst *AuthServerInstance)GetTokenpair(cnt context.Context,spar *token.Sign
 }
 
 func (inst *AuthServerInstance)AccessTokenValidation(cnt context.Context,at *token.AccessTokenMsg) (val *token.ValidResult,err error){
+	val = &token.ValidResult{Valid:false}
+	valu, err := tokenanager.ValidateAccessToken(at.TokenString)
+	if err != nil {
+		log.Printf("ERROR: %s", err.Error())
+		err = status.Errorf(codes.InvalidArgument, "Tiken validation failed")
+	} else {
+		val.Valid = true
+	}
+	val.Tok = &token.Token{valu.UserId, valu.LogIn}
 	return
 }
