@@ -8,6 +8,7 @@ import (
 	"github.com/wolf1996/gateway/resources/eventsclient"
 	"github.com/wolf1996/gateway/resources/registrationclient"
 	"github.com/wolf1996/gateway/resources/userclient"
+	"github.com/wolf1996/gateway/resources/authclient"
 )
 
 type GatewayConfig struct {
@@ -15,6 +16,7 @@ type GatewayConfig struct {
 	UserInfoConf         userclient.Config
 	EventsInfoConf       eventsclient.Config
 	RegistrationInfoConf registrationclient.Config
+	AuthConf             authclient.Config
 }
 
 var port string
@@ -24,6 +26,7 @@ func applyConfig(config GatewayConfig) {
 	userclient.SetConfigs(config.UserInfoConf)
 	eventsclient.SetConfigs(config.EventsInfoConf)
 	registrationclient.SetConfigs(config.RegistrationInfoConf)
+	authclient.SetConfigs(config.AuthConf)
 }
 
 func StartServer(config GatewayConfig) error {
@@ -50,7 +53,7 @@ func StartServer(config GatewayConfig) error {
 
 	router.GET("/event/:event_id", controllers.GetEventInfo)
 	router.GET("/events/:pagenum", controllers.GetEvents)
-	
+	router.POST("/login",controllers.LogIn)
 	router.Run(port)
 	return nil
 }

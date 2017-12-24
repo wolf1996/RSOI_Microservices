@@ -10,9 +10,8 @@ import (
 	"github.com/wolf1996/gateway/resources/userclient"
 	_ "github.com/golang/protobuf/proto"
 	"google.golang.org/grpc/metadata"
-	_ "github.com/wolf1996/gateway/authtoken"
 	"github.com/golang/protobuf/proto"
-	"github.com/wolf1996/gateway/authtoken"
+	"github.com/wolf1996/gateway/token"
 	"encoding/base64"
 	"github.com/wolf1996/gateway/resources/eventsclient"
 )
@@ -91,7 +90,7 @@ func RemoveRegistration(c *gin.Context) {
 		c.JSON(http.StatusNotFound, views.Error{err.Error()})
 		return
 	}
-	token := authtoken.Token{user}
+	token := token.Token{user}
 	btTok,err := proto.Marshal(&token)
 	if err != nil {
 		log.Print(err.Error())

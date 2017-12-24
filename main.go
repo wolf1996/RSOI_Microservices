@@ -6,6 +6,7 @@ import (
 	"github.com/wolf1996/gateway/resources/eventsclient"
 	"github.com/wolf1996/gateway/resources/registrationclient"
 	"github.com/wolf1996/gateway/resources/userclient"
+	"github.com/wolf1996/gateway/resources/authclient"
 )
 
 func parseViper() appserver.GatewayConfig {
@@ -24,9 +25,12 @@ func parseViper() appserver.GatewayConfig {
 	crtUser := viper.GetString("user_info_service.crt")
 	crtEvent := viper.GetString("event_info_service.crt")
 	crtRegs := viper.GetString("registration_info_service.crt")
+	authAddres := viper.GetString("auth_service.addres")
+	crtAuth := viper.GetString("auth_service.crt")
 	userQue := userclient.QConfig{addres, user, pass}
 	return appserver.GatewayConfig{port, userclient.Config{userServiceAddres, crtUser, userQue},
-		eventsclient.Config{eventServiceAddres, crtEvent, eventQue}, registrationclient.Config{registrationServiceAddres, crtRegs}}
+		eventsclient.Config{eventServiceAddres, crtEvent, eventQue}, registrationclient.Config{registrationServiceAddres, crtRegs},
+		authclient.Config{authAddres, crtAuth}}
 }
 
 func prepareViper() {

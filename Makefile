@@ -7,33 +7,35 @@ cleanprotocs:
 	rm -rf evserver
 	rm -rf regserver
 	rm -rf authtoken
+	rm -rf token
 
 userclient:
 	mkdir -p usserver
-	cp ../user/server.protoc usserver.protoc
-	protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:usserver ./usserver.protoc
+	cp ../user/server.protoc usserver.proto
+	protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:usserver ./usserver.proto
 
 eventsclient:
 	mkdir -p evserver
-	cp ../events/server.protoc evserver.protoc
-	protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:evserver ./evserver.protoc
+	cp ../events/server.protoc evserver.proto
+	protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:evserver ./evserver.proto
 
 registrationsclient:
 	mkdir -p regserver
-	cp ../registration/server.protoc regserver.protoc
-	protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:regserver ./regserver.protoc
+	cp ../registration/server.protoc regserver.proto
+	protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:regserver ./regserver.proto
 
-authtoken:
-	mkdir -p authtoken
-	cp ../auth/token.protoc authtoken.protoc
-	protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:authtoken ./authtoken.protoc
+token:
+	mkdir -p token
+	cp ../auth/token.proto token.proto
+	cp ../auth/server.proto authserver.proto
+	protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:token token.proto authserver.proto
 
 clients: \
 	cleanprotocs \
     userclient \
     eventsclient \
     registrationsclient \
-    authtoken
+    token
 
 build_gateway_server:
 	GOPATH=$(GOPATH) go build -o $(GOPATH)/bin/gateway main.go

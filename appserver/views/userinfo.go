@@ -5,3 +5,8 @@ type UserInfo struct {
 	CountEvens int64  `json:"count"`
 	Id         int64  `json:"id"`
 }
+
+type LogIn struct {
+	Login  string `json:"login"`
+	Pass   string `json:"pass"`
+} 

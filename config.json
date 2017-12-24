@@ -21,5 +21,9 @@
   "registration_info_service": {
     "addres":"localhost:8002",
     "crt":"/home/ksg/disk_d/labs2017M/RSOI/2/security/registration/server.crt"
+  },
+  "auth_service": {
+    "addres":"localhost:8003",
+    "crt":"/home/ksg/disk_d/labs2017M/RSOI/2/security/auth/server.crt"
   }
 }
