@@ -1,5 +1,5 @@
 {
-  "port":":8004",
+  "port":":8003",
   "crt": "/home/ksg/disk_d/labs2017M/RSOI/2/security/auth/server.crt",
   "key": "/home/ksg/disk_d/labs2017M/RSOI/2/security/auth/server.key",
   "database":{
@@ -18,6 +18,6 @@
   "token":{
     "salt":"123456",
     "access_token_exparision":1000,
-    "refresh_token_exparision":1000
+    "refresh_token_exparision":1514081844
   }
 }

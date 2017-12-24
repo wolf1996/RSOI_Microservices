@@ -11,7 +11,7 @@ import (
 func parseViper() application.Config {
 	viper.ReadInConfig()
 	port := viper.GetString("port")
-	salt := viper.GetString("salt")
+	salt := viper.GetString("database.salt")
 	database_user := viper.GetString("database.username")
 	pass := viper.GetString("database.password")
 	dbname := viper.GetString("database.dbname")
@@ -30,9 +30,9 @@ func parseViper() application.Config {
 
 func prepareViper() {
 	viper.SetConfigName("config")
-	viper.AddConfigPath("/etc/gateway/")
-	viper.AddConfigPath("/home/ksg/disk_d/labs2017M/RSOI/2/src/github.com/wolf1996/events/")
-	viper.SetDefault("port", ":8001")
+	viper.AddConfigPath("/etc/auth/")
+	viper.AddConfigPath("/home/ksg/disk_d/labs2017M/RSOI/2/src/github.com/wolf1996/auth/")
+	viper.SetDefault("port", ":8003")
 }
 
 func main() {

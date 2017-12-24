@@ -31,12 +31,12 @@ func (inst *AuthServerInstance)GetAccessToken(cnt context.Context, rfrsh *token.
 }
 
 func (inst *AuthServerInstance)GetTokenpair(cnt context.Context,spar *token.SignInPair) (tkns *token.Tokenpair,err error){
-	tkns = &token.Tokenpair{}
+	tkns = &token.Tokenpair{&token.AccessTokenMsg{}, &token.RefreshTokenMsg{}}
 	uinf, err := models.CheckPass(models.LogIn{Login:spar.Login,Pass:spar.Pass})
 	if err != nil {
 		log.Printf("ERROR: %s", err.Error())
 		if err == models.NotFound {
-			err = status.Errorf(codes.InvalidArgument, "Invalid Login Password")
+			err = status.Errorf(codes.NotFound, "Invalid Login Password")
 		} else {
 			err = status.Errorf(codes.Internal, "Server Error")
 		}
