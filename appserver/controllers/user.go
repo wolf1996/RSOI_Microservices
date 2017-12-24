@@ -8,11 +8,14 @@ import (
 	"log"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/wolf1996/gateway/resources/authclient"
+	"github.com/wolf1996/gateway/appserver/middleware"
+	"github.com/wolf1996/gateway/token"
 )
 
 func GetUserInfo(c *gin.Context) {
+	tkn := c.MustGet(middleware.AtokenName).(token.Token)
+	id := tkn.LogIn
 	var inf views.UserInfo
-	id := c.MustGet(gin.AuthUserKey).(string)
 	res, err := userclient.GetUserInfo(id)
 	if err != nil {
 		log.Printf("Error %s", err.Error())

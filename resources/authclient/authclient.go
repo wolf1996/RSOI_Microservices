@@ -49,6 +49,8 @@ func ValidateAccessToken(instoken string)(tkn token.Token, err error){
 	}
 	if validationRes.Valid{
 		tkn = *validationRes.Tok
+	} else {
+		err = fmt.Errorf("invalid token")
 	}
 	return
 }
@@ -60,6 +62,21 @@ func GetTokenPair(data LogInData)(access string,refresh string,err error){
 	}
 	cli := token.NewAuthServiceClient(conn)
 	pairetoken, err := cli.GetTokenpair(context.Background(),&token.SignInPair{data.LogIn, data.Pass})
+	if err != nil {
+		return
+	}
+	access = pairetoken.AccessToken.TokenString
+	refresh = pairetoken.RefreshToken.TokenString
+	return
+}
+
+func UpdateTokens(reftoken string)(access string,refresh string,err error){
+	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
+	if err != nil {
+		return
+	}
+	cli := token.NewAuthServiceClient(conn)
+	pairetoken, err := cli.GetAccessToken(context.Background(), &token.RefreshTokenMsg{reftoken})
 	if err != nil {
 		return
 	}

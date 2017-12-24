@@ -9,6 +9,8 @@ import (
 	"github.com/wolf1996/gateway/resources/registrationclient"
 	"github.com/wolf1996/gateway/resources/userclient"
 	"github.com/wolf1996/gateway/resources/authclient"
+	"github.com/wolf1996/gateway/appserver/middleware"
+	"github.com/wolf1996/gateway/token"
 )
 
 type GatewayConfig struct {
@@ -32,14 +34,11 @@ func applyConfig(config GatewayConfig) {
 func StartServer(config GatewayConfig) error {
 	applyConfig(config)
 	router := gin.Default()
-	auth := router.Group("/", gin.BasicAuth(
-		gin.Accounts{
-			"simpleUser": "1",
-			"eventOwner": "1",
-		}))
+	auth := router.Group("/", middleware.TokenAuth())
 
 	auth.GET("/hello", func(c *gin.Context) {
-		user := c.MustGet(gin.AuthUserKey).(string)
+		tkn := c.MustGet(middleware.AtokenName).(token.Token)
+		user := tkn.LogIn
 		var respMsg string
 		respMsg = "hello " + user
 		c.JSON(http.StatusOK, gin.H{"message": respMsg})

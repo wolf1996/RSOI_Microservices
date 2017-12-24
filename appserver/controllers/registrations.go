@@ -14,11 +14,13 @@ import (
 	"github.com/wolf1996/gateway/token"
 	"encoding/base64"
 	"github.com/wolf1996/gateway/resources/eventsclient"
+	"github.com/wolf1996/gateway/appserver/middleware"
 )
 
 func RegistrateMe(c *gin.Context) {
 	//добавить токен здесь
-	user := c.MustGet(gin.AuthUserKey).(string)
+	tkn := c.MustGet(middleware.AtokenName).(token.Token)
+	user := tkn.LogIn
 	key,err := strconv.ParseInt(c.Param("event_id"), 10, 64)
 	if err != nil {
 		log.Print(err.Error())
@@ -83,14 +85,15 @@ func RegistrateMe(c *gin.Context) {
 
 
 func RemoveRegistration(c *gin.Context) {
-	user := c.MustGet(gin.AuthUserKey).(string)
+	tkn := c.MustGet(middleware.AtokenName).(token.Token)
+	user := tkn.LogIn
 	key,err := strconv.ParseInt(c.Param("registration_id"), 10, 64)
 	if err != nil {
 		log.Print(err.Error())
 		c.JSON(http.StatusNotFound, views.Error{err.Error()})
 		return
 	}
-	token := token.Token{user}
+	token := token.Token{2, user}
 	btTok,err := proto.Marshal(&token)
 	if err != nil {
 		log.Print(err.Error())
@@ -151,6 +154,8 @@ func GetRegisrationInfo(c *gin.Context){
 }
 
 func GetRegistrations(c *gin.Context){
+	tkn := c.MustGet(middleware.AtokenName).(token.Token)
+	id := tkn.LogIn
 	strparam := c.Param("pagenum")
 	if len(strparam) == 0 {
 		strparam = "1"
@@ -162,7 +167,6 @@ func GetRegistrations(c *gin.Context){
 		return
 	}
 	var infs []views.RegistrationInfo
-	id := c.MustGet(gin.AuthUserKey).(string)
 	res, err := registrationclient.GetRegistrations(id,pnum,1)
 	if err != nil {
 		log.Print(err.Error())
