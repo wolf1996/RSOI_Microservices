@@ -7,3 +7,8 @@ type Registre struct {
 type RemoveReg struct {
 	RegId int64 `form:"reg" json:"reg" binding:"required"`
 }
+
+type LoginForm struct {
+	Login    string `form:"login" binding:"required"`
+	Password string `form:"password" binding:"required"`
+}

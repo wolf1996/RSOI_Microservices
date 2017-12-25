@@ -23,3 +23,14 @@ type RegistrationInfo struct {
 	UserId string `json:"user_id"`
 	EventId int64 `json:"event_id"`
 }
+
+type ClientInfo struct {
+	Id 		int64 `json:"id"`
+	Name 	string `json:"name"`
+	RedURL string `json:"red_url"`
+}
+
+type RedirectInfo struct {
+	RedirectUrl string `json:"redirect_url"`
+	CodeFlow    string `json:"code_flow"`
+}

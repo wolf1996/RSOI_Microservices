@@ -1,0 +1,22 @@
+{{define "content"}}
+<script src="/static/lgfrm.js"></script>
+<div class="login-page">
+    <div class="form">
+        <form class="login-form" action="/login"  method = "post">
+            <input type="text" placeholder="login" name="login"/>
+            <input type="password" placeholder="password" name="password"/>
+            <button>login</button>
+        </form>
+    </div>
+</div>
+{{end}}
+{{define "title"}}
+<title>Title</title>
+<link rel="stylesheet" href="/static/login.css">
+<link rel="stylesheet" href="/static/navbar.css">
+<link rel="stylesheet" href="/static/table.css">
+<link rel="stylesheet" href="/static/pagination.css">
+<link rel="stylesheet" href="/static/pagebtn.css">
+<link rel="stylesheet" href="/static/usercard.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{{end}}
