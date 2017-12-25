@@ -31,12 +31,16 @@ gateway_start:
 auth_start:
 	$(MAKE) -C ../auth start
 
+frontend_start:
+	$(MAKE) -C ../frontend start
+
 start_all: \
 	user_start \
 	event_start \
 	registration_start \
 	gateway_start \
-	auth_start
+	auth_start \
+	frontend_start
 
 user_stop:
 	$(MAKE) -C ../user stop
@@ -53,12 +57,16 @@ gateway_stop:
 auth_stop:
 	$(MAKE) -C ../auth stop
 
+frontend_stop:
+	$(MAKE) -C ../frontend stop
+
 stop_all: \
 	user_stop \
 	event_stop \
 	registration_stop \
 	gateway_stop \
-	auth_stop 
+	auth_stop \
+	frontend_stop
 
 user_build:
 	$(MAKE) -C ../user build
@@ -75,9 +83,13 @@ gateway_build:
 auth_build:
 	$(MAKE) -C ../auth build
 
+frontend_build:
+	$(MAKE) -C ../frontend build
+
 build_all: \
 	user_build \
 	event_build \
 	registration_build \
 	gateway_build  \
-	auth_build 
+	auth_build \
+	frontend_build
