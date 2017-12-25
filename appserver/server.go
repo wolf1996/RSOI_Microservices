@@ -49,10 +49,13 @@ func StartServer(config GatewayConfig) error {
 	auth.DELETE("/registrations/:registration_id/remove", controllers.RemoveRegistration)
 	auth.GET("/registrations/:registration_id", controllers.GetRegisrationInfo)	
 	auth.GET("/user/info", controllers.GetUserInfo)
+	auth.GET("/get_access/:id", controllers.GetAccess)
+	auth.POST("/get_access/:id", controllers.AllowAccess)
 
 	router.GET("/event/:event_id", controllers.GetEventInfo)
 	router.GET("/events/:pagenum", controllers.GetEvents)
 	router.POST("/login",controllers.LogIn)
+	router.POST("/shiftcode", controllers.GetShiftCodeflow)
 	router.Run(port)
 	return nil
 }

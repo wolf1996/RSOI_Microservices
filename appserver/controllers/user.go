@@ -10,6 +10,7 @@ import (
 	"github.com/wolf1996/gateway/resources/authclient"
 	"github.com/wolf1996/gateway/appserver/middleware"
 	"github.com/wolf1996/gateway/token"
+	"strconv"
 )
 
 func GetUserInfo(c *gin.Context) {
@@ -43,4 +44,55 @@ func LogIn(c *gin.Context){
 	}
 	c.SetCookie("RefreshToken",refresh,0,"","127.0.0.1",false,false)
 	c.SetCookie("AccessToken",access,0,"","127.0.0.1",false,false)
+}
+
+func GetAccess(c *gin.Context) {
+	key,err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		log.Print(err.Error())
+		c.JSON(http.StatusBadRequest, views.Error{err.Error()})
+		return
+	}
+	inf, err := authclient.GetClientInfo(key)
+	if err != nil {
+		log.Print(err.Error())
+		c.JSON(http.StatusBadRequest, views.Error{err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, views.ClientInfo{inf.Id, inf.Name, inf.RedirUrl})
+}
+
+func AllowAccess(c *gin.Context) {
+	tkn := c.MustGet(middleware.AtokenName).(token.Token)
+	urlRed := c.Query("redirect_url")
+	if urlRed == ""{
+		log.Print("Missed Query parameters")
+		c.JSON(http.StatusBadRequest, views.Error{"Missed Query parameters"})
+		return
+	}
+	code, err := authclient.GetCodeGrant(tkn)
+	if err != nil {
+		log.Print(err.Error())
+		c.JSON(http.StatusBadRequest, views.Error{err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, views.RedirectInfo{urlRed,code})
+}
+
+func GetShiftCodeflow(c *gin.Context) {
+	cflow := views.CodeFlowView{}
+	err := c.ShouldBindWith(&cflow, binding.JSON)
+	if err != nil {
+		log.Print(err.Error())
+		c.JSON(http.StatusBadRequest, views.Error{err.Error()})
+		return
+	}
+	acode, rcode, err := authclient.GetCodeflowTokenPair(cflow.CodeFlow)
+	if err != nil {
+		log.Print(err.Error())
+		c.JSON(http.StatusBadRequest, views.Error{err.Error()})
+		return
+	}
+	c.SetCookie("RefreshToken",rcode,0,"",cflow.Domain,false,false)
+	c.SetCookie("AccessToken",acode,0,"",cflow.Domain,false,false)
 }

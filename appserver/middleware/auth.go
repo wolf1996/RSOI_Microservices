@@ -48,6 +48,7 @@ func TokenAuth() gin.HandlerFunc{
 		if err != nil {
 			log.Printf("MIDDLEWARE: %s", err.Error())
 			c.JSON(http.StatusBadRequest, views.Error{"Token validation error"})
+			c.Abort()
 			return
 		}
 		log.Printf("Token set id=%d login=%s", tkn.Id, tkn.LogIn)

@@ -21,6 +21,12 @@ type LogInData struct {
 	Pass  			 string
 }
 
+type ClientInfo struct {
+	Id int64
+	Name string
+	RedirUrl string
+}
+
 var (
 	addres string
 	creds  credentials.TransportCredentials
@@ -77,6 +83,51 @@ func UpdateTokens(reftoken string)(access string,refresh string,err error){
 	}
 	cli := token.NewAuthServiceClient(conn)
 	pairetoken, err := cli.GetAccessToken(context.Background(), &token.RefreshTokenMsg{reftoken})
+	if err != nil {
+		return
+	}
+	access = pairetoken.AccessToken.TokenString
+	refresh = pairetoken.RefreshToken.TokenString
+	return
+}
+
+func GetClientInfo(id int64) (inf ClientInfo, err error) {
+	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
+	if err != nil {
+		return
+	}
+	cli := token.NewAuthServiceClient(conn)
+	clientinfo, err := cli.GetClientInfo(context.Background(),&token.ClientId{id})
+	if err != nil {
+		return
+	}
+	inf.Id = clientinfo.Id
+	inf.Name = clientinfo.Name
+	inf.RedirUrl = clientinfo.Redirurl
+	return
+}
+
+func GetCodeGrant(tkn token.Token)(code string, err error){
+	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
+	if err != nil {
+		return
+	}
+	cli := token.NewAuthServiceClient(conn)
+	cf, err := cli.GetCodeFlow(context.Background(),&tkn)
+	if err != nil {
+		return
+	}
+	code = cf.TokenString
+	return
+}
+
+func GetCodeflowTokenPair(cflow string)(access string,refresh string,err error){
+	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
+	if err != nil {
+		return
+	}
+	cli := token.NewAuthServiceClient(conn)
+	pairetoken, err := cli.ShiftCodeFlow(context.Background(),&token.CodeflowTokenMsg{cflow})
 	if err != nil {
 		return
 	}
