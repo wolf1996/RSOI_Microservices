@@ -40,6 +40,9 @@ func ValidateAccessToken(token string)(tk AccessTokenClaime, err error){
 		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
 		return salt, nil
 	})
+	if err != nil{
+		return
+	}
 	if claims,ok  := parsedToken.Claims.(*AccessTokenClaime); ok && parsedToken.Valid{
 		tk = *claims
 	} else {
@@ -58,6 +61,9 @@ func ValidateRefreshToken(token string)(tk RefreshTokenClaime, err error){
 		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
 		return salt, nil
 	})
+	if err != nil{
+		return
+	}
 	if claims,ok  := parsedToken.Claims.(*RefreshTokenClaime); ok && parsedToken.Valid{
 		tk = *claims
 	} else {
@@ -82,7 +88,7 @@ func NewRefreshToken(uid int64, login string) (tkn string, exp int64, err error)
 	newtk.ExpiresAt = exp
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &newtk)
 	tkn, err = token.SignedString(salt)
-	log.Printf("created Access token: %s \n %d \n %d", tkn, newtk.ExpiresAt, refreshExp)
+	log.Printf("created Refresh token: %s \n %d \n %d", tkn, newtk.ExpiresAt, refreshExp)
 	return
 }
 
@@ -92,7 +98,7 @@ func NewAccessToken(uid int64, login string ) (tkn string, exp int64, err error)
 	newtk.ExpiresAt = exp
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &newtk)
 	tkn, err = token.SignedString(salt)
-	log.Printf("created Access token: %s \n %d \n %d", tkn, newtk.ExpiresAt, refreshExp)
+	log.Printf("created Access token: %s \n %d \n %d", tkn, newtk.ExpiresAt, accessExp)
 	return
 }
 
@@ -108,12 +114,12 @@ func ProduceAccessToken(info models.UserInfo) (tkn string, exp int64, err error)
 }
 
 func NewCodeFlow(uid int64, login string) (tkn string, exp int64, err error) {
-	newtk := RefreshTokenClaime{UserId:uid, LogIn: login}
-	exp = time.Now().Unix() + accessExp
+	newtk := CodeFlowClaime{UserId:uid, LogIn: login}
+	exp = time.Now().Unix() + codeflowExp
 	newtk.ExpiresAt = exp
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &newtk)
 	tkn, err = token.SignedString(salt)
-	log.Printf("created Refresh token: %s \n %d \n %d", tkn, newtk.ExpiresAt, refreshExp)
+	log.Printf("created Codeflow token: %s \n %d \n %d", tkn, newtk.ExpiresAt, codeflowExp)
 	return
 }
 
@@ -127,6 +133,9 @@ func ValidateCodeFlow(cftoken string)(tk CodeFlowClaime, err error){
 		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
 		return salt, nil
 	})
+	if err != nil{
+		return
+	}
 	if claims,ok  := parsedToken.Claims.(*CodeFlowClaime); ok && parsedToken.Valid{
 		tk = *claims
 	} else {

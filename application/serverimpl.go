@@ -35,7 +35,7 @@ func (inst *AuthServerInstance)GetAccessToken(cnt context.Context, rfrsh *token.
 		return
 	}
 	if !cntns{
-		log.Printf("Token not in list:%s", err.Error())
+		log.Printf("Token not in list:%s", rfrsh.TokenString)
 		err = status.Errorf(codes.InvalidArgument, "Token validation failed")
 		return
 	}
@@ -88,7 +88,7 @@ func (inst *AuthServerInstance)GetTokenpair(cnt context.Context,spar *token.Sign
 }
 
 func (inst *AuthServerInstance)AccessTokenValidation(cnt context.Context,at *token.AccessTokenMsg) (val *token.ValidResult,err error){
-	val = &token.ValidResult{Valid:false}
+	val = &token.ValidResult{Valid:false, Tok:&token.Token{}}
 	valu, err := tokenanager.ValidateAccessToken(at.TokenString)
 	if err != nil {
 		log.Printf("ERROR: %s", err.Error())
