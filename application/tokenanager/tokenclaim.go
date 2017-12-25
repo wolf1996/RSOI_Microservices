@@ -14,11 +14,21 @@ type RefreshTokenClaime struct{
 	LogIn  string `json:"log_in"`
 }
 
+type CodeFlowClaime struct {
+	jwt.StandardClaims
+	UserId int64 `json:"user_id"`
+	LogIn  string `json:"log_in"`
+}
+
+func (tkn *CodeFlowClaime)Valid() error {
+	return tkn.StandardClaims.Valid()
+}
+
 func (tkn *AccessTokenClaime)Valid() error {
-	return nil
+	return tkn.StandardClaims.Valid()
 }
 
 
 func (tkn *RefreshTokenClaime)Valid() error {
-	return nil
+	return tkn.StandardClaims.Valid()
 }

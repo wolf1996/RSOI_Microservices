@@ -14,6 +14,12 @@
   version = "v1.4.2"
 
 [[projects]]
+  name = "github.com/go-redis/redis"
+  packages = [".","internal","internal/consistenthash","internal/hashtag","internal/pool","internal/proto"]
+  revision = "9c885d5ba8a22f260badcffde1649915fbeebfc0"
+  version = "v6.7.5"
+
+[[projects]]
   branch = "master"
   name = "github.com/golang/protobuf"
   packages = ["proto","ptypes","ptypes/any","ptypes/duration","ptypes/timestamp"]
@@ -118,6 +124,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ce5b813dcb4f19c9ea01153c7b4bd7fb863e45a553234c5cbd8b16f17d54b24b"
+  inputs-digest = "b8ad2392e88b2caef495a4a855cad76d59b95008820b9c943caaccbcd88b57a9"
   solver-name = "gps-cdcl"
   solver-version = 1

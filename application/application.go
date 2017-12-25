@@ -32,7 +32,11 @@ func applyConfig(config Config) {
 	var err error
 	creds, err = credentials.NewServerTLSFromFile(config.Crt, config.Key)
 	if err != nil {
-		panic(err.Error())
+		log.Fatalf("SSL:ERR %s", err.Error())
+	}
+	err = storage.ApplyConfig(config.StorConfig)
+	if err != nil {
+		log.Fatalf("REDIS:ERR %s", err.Error())
 	}
 }
 

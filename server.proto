@@ -15,6 +15,11 @@ message RefreshTokenMsg{
     string tokenString = 1;
 }
 
+message CodeflowTokenMsg{
+    string tokenString = 1;
+}
+
+
 message Tokenpair{
     AccessTokenMsg accessToken = 1;
     RefreshTokenMsg refreshToken = 2;
@@ -30,9 +35,22 @@ message ValidResult{
     Token tok  = 2;
 }
 
+message ClientInfo{
+    int64 Id        = 1;
+    string Name     = 2;
+    string Redirurl = 3;
+}
+
+message ClientId{
+    int64 Id = 1;
+}
+
 service AuthService {
     rpc GetAccessToken(RefreshTokenMsg) returns (Tokenpair){};
-    rpc GetTokenpair(SignInPair) returns(Tokenpair){};
+    rpc GetTokenpair(SignInPair) returns (Tokenpair){};
     rpc AccessTokenValidation(AccessTokenMsg) returns (ValidResult) {};
+    rpc GetCodeFlow(Token) returns (CodeflowTokenMsg){};
+    rpc ShiftCodeFlow(CodeflowTokenMsg) returns (Tokenpair){};
+    rpc GetClientInfo(ClientId) returns (ClientInfo){};
 }
 

@@ -20,11 +20,13 @@ func parseViper() application.Config {
 	tokensalt := viper.GetString("token.salt")
 	accesstokenexptime := viper.GetInt64("token.access_token_exparision")
 	refreshtokenexptime := viper.GetInt64("token.refresh_token_exparision")
+	codeflowexptime := viper.GetInt64("token.codeflow_exparision")
+
 	crt := viper.GetString("crt")
 	key := viper.GetString("key")
 	return application.Config{port, crt, key, storage.Config{storageaddres},models.DatabaseConfig{
 		database_user, pass, dbname, addres,salt}, tokenanager.Config{
-		tokensalt, accesstokenexptime, refreshtokenexptime,
+		tokensalt, accesstokenexptime, refreshtokenexptime, codeflowexptime,
 	}}
 }
 

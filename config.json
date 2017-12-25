@@ -10,14 +10,15 @@
     "salt":"123456"
   },
   "storage":{
-    "addres":"127.0.0.1",
+    "addres":"127.0.0.1:6379",
     "username":"",
     "password":"",
     "dbname":""
   },
   "token":{
     "salt":"123456",
-    "access_token_exparision":1000,
-    "refresh_token_exparision":2000
+    "access_token_exparision":10,
+    "refresh_token_exparision":500,
+    "codeflow_exparision":300
   }
 }
