@@ -91,6 +91,9 @@ func GetUserInfo(c *gin.Context) {
 		return
 	}
 	log.Print(string(bts[:]))
+	for _,i := range req.Cookies(){
+		c.SetCookie(i.Name,i.Value,i.MaxAge,i.Path,i.Domain,i.Secure, i.HttpOnly)
+	}
 	c.HTML(req.StatusCode,"userinfo.html",gin.H{"user":inf})
 }
 
