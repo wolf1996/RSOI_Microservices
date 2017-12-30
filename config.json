@@ -25,5 +25,14 @@
       "url": "127.0.0.1:27017",
       "database":"db"
     }
+  },
+  "app":{
+    "port":":8004",
+    "crt": "/home/ksg/disk_d/labs2017M/RSOI/2/security/stats/server.crt",
+    "key": "/home/ksg/disk_d/labs2017M/RSOI/2/security/stats/server.key",
+    "database": {
+      "url": "127.0.0.1:27017",
+      "database":"db"
+    }
   }
 }

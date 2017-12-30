@@ -15,24 +15,13 @@ message LoginEvent{
     string result  = 2;
 }
 
-message LoginEvents{
-    repeated LoginEvent data = 1;
-}
-
-message ChangeInfos {
-    repeated ChangeInfo data = 1;
-}
-
-message ViewInfos {
-    repeated ViewInfo data = 1;
-}
 
 message Empty{}
 
 service StatisticService {
-    rpc GetLogins(Empty) returns (LoginEvents){};
-    rpc GetChanges(Empty) returns ( ChangeInfos){};
-    rpc GetViews(Empty) returns ( ViewInfos){};
+    rpc GetLogins(Empty) returns (stream LoginEvent){};
+    rpc GetChanges(Empty) returns (stream ChangeInfo){};
+    rpc GetViews(Empty) returns (stream ViewInfo){};
 }
 
 //protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:server ./server.protoc

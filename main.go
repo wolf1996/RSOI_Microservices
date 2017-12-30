@@ -26,11 +26,11 @@ func parseViper() (worker.Config, application.Config){
 	cfg.Dtconfig.MgoConf.Addres = viper.GetString("databasemgr.database.url")
 	cfg.Dtconfig.MgoConf.DbName = viper.GetString("databasemgr.database.database")
 	cfgapp := application.Config{}
-	cfgapp.Crt = viper.GetString("app.database.crt")
-	cfgapp.Key = viper.GetString("app.database.key")
-	cfgapp.Port = viper.GetString("app.database.Port")
-	cfgapp.MgoConf.Addres = viper.GetString("databasemgr.database.addres")
-	cfgapp.MgoConf.DbName = viper.GetString("databasemgr.database.db")
+	cfgapp.Crt = viper.GetString("app.crt")
+	cfgapp.Key = viper.GetString("app.key")
+	cfgapp.Port = viper.GetString("app.port")
+	cfgapp.MgoConf.Addres = viper.GetString("app.database.url")
+	cfgapp.MgoConf.DbName = viper.GetString("app.database.database")
 	return cfg, cfgapp
 }
 
