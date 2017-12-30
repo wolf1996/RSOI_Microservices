@@ -24,6 +24,7 @@ type LogIn struct {
 type UserInfo struct {
 	Id    int64
 	LogIn string
+	Role     int32
 }
 
 type ClientInfo struct {
@@ -51,7 +52,7 @@ func ApplyConfig(config DatabaseConfig) (err error) {
 }
 
 func CheckPass(authdata LogIn) (result UserInfo, err error) {
-	rows, err := db.Query("SELECT ID, LOGIN FROM AUTH_INFO WHERE LOGIN = $1 AND PASSHASH = crypt($2, $3)", authdata.Login, authdata.Pass, salt)
+	rows, err := db.Query("SELECT ID, LOGIN, ROLE FROM AUTH_INFO WHERE LOGIN = $1 AND PASSHASH = crypt($2, $3)", authdata.Login, authdata.Pass, salt)
 	if err != nil {
 		log.Print(err.Error())
 		return
@@ -66,7 +67,7 @@ func CheckPass(authdata LogIn) (result UserInfo, err error) {
 		err = fmt.Errorf("ERROR: %s", dbErr.Error())
 		return
 	}
-	rows.Scan(&result.Id, &result.LogIn)
+	rows.Scan(&result.Id, &result.LogIn, &result.Role)
 	return
 }
 

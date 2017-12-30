@@ -10,6 +10,7 @@ import (
 	"log"
 	"github.com/wolf1996/auth/application/storage"
 	"time"
+	"github.com/wolf1996/stats/client"
 )
 
 type AuthServerInstance struct {
@@ -59,6 +60,12 @@ func (inst *AuthServerInstance)GetAccessToken(cnt context.Context, rfrsh *token.
 }
 
 func (inst *AuthServerInstance)GetTokenpair(cnt context.Context,spar *token.SignInPair) (tkns *token.Tokenpair,err error){
+	defer func() {
+		if err != nil {
+			client.WriteLoginMessage(false, err.Error())
+		}
+		client.WriteLoginMessage(true, "Sccess LogIn")
+	}()
 	tkns = &token.Tokenpair{&token.AccessTokenMsg{}, &token.RefreshTokenMsg{}}
 	uinf, err := models.CheckPass(models.LogIn{Login:spar.Login,Pass:spar.Pass})
 	if err != nil {
@@ -96,7 +103,7 @@ func (inst *AuthServerInstance)AccessTokenValidation(cnt context.Context,at *tok
 	} else {
 		val.Valid = true
 	}
-	val.Tok = &token.Token{valu.UserId, valu.LogIn}
+	val.Tok = &token.Token{valu.UserId, valu.LogIn, token.Token_Roles(valu.Role)}
 	return
 }
 
@@ -140,14 +147,14 @@ func  (inst *AuthServerInstance)ShiftCodeFlow(cnt context.Context,rt *token.Code
 		err = status.Errorf(codes.InvalidArgument, "Token validation failed")
 		return
 	}
-	tp.AccessToken.TokenString, _, err = tokenanager.NewAccessToken(tkn.UserId, tkn.LogIn)
+	tp.AccessToken.TokenString, _, err = tokenanager.NewAccessToken(tkn.UserId, tkn.LogIn,int32(token.Token_APP))
 	if err != nil {
 		log.Printf("ERROR:%s", err.Error())
 		err = status.Errorf(codes.InvalidArgument, "Token validation failed")
 		return
 	}
 	var rf int64
-	tp.RefreshToken.TokenString, rf, err = tokenanager.NewRefreshToken(tkn.UserId, tkn.LogIn)
+	tp.RefreshToken.TokenString, rf, err = tokenanager.NewRefreshToken(tkn.UserId, tkn.LogIn, int32(token.Token_APP))
 	if err != nil {
 		log.Printf("ERROR:%s", err.Error())
 		err = status.Errorf(codes.InvalidArgument, "Token validation failed")

@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc"
 	"github.com/wolf1996/auth/token"
 	"github.com/wolf1996/auth/application/tokenanager"
+	"github.com/wolf1996/stats/client"
 )
 
 type Config struct {
@@ -19,7 +20,7 @@ type Config struct {
 	StorConfig   storage.Config
 	DatabaseConf models.DatabaseConfig
 	TokenConf    tokenanager.Config
-
+	StatsConf    client.Config
 }
 
 var port string
@@ -30,6 +31,10 @@ func applyConfig(config Config) {
 	models.ApplyConfig(config.DatabaseConf)
 	tokenanager.ApplyConfig(config.TokenConf)
 	var err error
+	err = client.StartApplication(config.StatsConf)
+	if err != nil {
+		log.Panic("Failed to start statsconf")
+	}
 	creds, err = credentials.NewServerTLSFromFile(config.Crt, config.Key)
 	if err != nil {
 		log.Fatalf("SSL:ERR %s", err.Error())

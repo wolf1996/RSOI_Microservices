@@ -20,5 +20,34 @@
     "access_token_exparision":10,
     "refresh_token_exparision":500,
     "codeflow_exparision":300
+  },
+  "stats":{
+    "name": "auth",
+    "timeout": 34,
+    "handler": {
+      "workers_number": 1,
+      "buffer_size": 10,
+      "rabbit": {
+        "user": "guest",
+        "password": "guest",
+        "addres": "127.0.0.1:5672"
+      }
+    },
+    "response": {
+      "workers_number": 1,
+      "buffer_size": 10,
+      "rabbit": {
+        "user": "guest",
+        "password": "guest",
+        "addres": "127.0.0.1:5672"
+      }
+    },
+    "redis":{
+      "addres":"127.0.0.1:6379",
+      "username":"",
+      "password":"",
+      "db":1,
+      "hash_name":"gateway_stats"
+    }
   }
 }

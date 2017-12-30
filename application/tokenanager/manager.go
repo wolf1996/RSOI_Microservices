@@ -73,17 +73,17 @@ func ValidateRefreshToken(token string)(tk RefreshTokenClaime, err error){
 }
 
 func RefreshRefreshToken(tk RefreshTokenClaime) (tkn string, exp int64, err error){
-	tkn, exp, err = NewRefreshToken(tk.UserId, tk.LogIn)
+	tkn, exp, err = NewRefreshToken(tk.UserId, tk.LogIn, tk.Role)
 	return
 }
 
 func RefreshAccessToken(tk RefreshTokenClaime) (tkn string, exp int64, err error){
-	tkn, exp,err = NewAccessToken(tk.UserId, tk.LogIn)
+	tkn, exp,err = NewAccessToken(tk.UserId, tk.LogIn, tk.Role)
 	return
 }
 
-func NewRefreshToken(uid int64, login string) (tkn string, exp int64, err error){
-	newtk := RefreshTokenClaime{UserId:uid,LogIn: login}
+func NewRefreshToken(uid int64, login string, role int32) (tkn string, exp int64, err error){
+	newtk := RefreshTokenClaime{UserId:uid,LogIn: login, Role:role}
 	exp = time.Now().Unix() + refreshExp
 	newtk.ExpiresAt = exp
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &newtk)
@@ -92,8 +92,8 @@ func NewRefreshToken(uid int64, login string) (tkn string, exp int64, err error)
 	return
 }
 
-func NewAccessToken(uid int64, login string ) (tkn string, exp int64, err error){
-	newtk := AccessTokenClaime{UserId:uid, LogIn: login}
+func NewAccessToken(uid int64, login string, role int32 ) (tkn string, exp int64, err error){
+	newtk := AccessTokenClaime{UserId:uid, LogIn: login,Role: role }
 	exp = time.Now().Unix() + accessExp
 	newtk.ExpiresAt = exp
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &newtk)
@@ -103,13 +103,13 @@ func NewAccessToken(uid int64, login string ) (tkn string, exp int64, err error)
 }
 
 func ProduceRefreshToken(info models.UserInfo) (tkn string, exp int64, err error){
-	tkn, exp, err = NewRefreshToken(info.Id, info.LogIn)
+	tkn, exp, err = NewRefreshToken(info.Id, info.LogIn, info.Role)
 	return
 }
 
 
 func ProduceAccessToken(info models.UserInfo) (tkn string, exp int64, err error){
-	tkn, exp, err = NewAccessToken(info.Id, info.LogIn)
+	tkn, exp, err = NewAccessToken(info.Id, info.LogIn, info.Role)
 	return
 }
 

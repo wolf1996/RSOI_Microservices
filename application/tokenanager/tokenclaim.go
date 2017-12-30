@@ -6,12 +6,14 @@ type AccessTokenClaime struct{
 	jwt.StandardClaims
 	UserId int64 `json:"user_id"`
 	LogIn  string `json:"log_in"`
+	Role   int32 `json:"role"`
 }
 
 type RefreshTokenClaime struct{
 	jwt.StandardClaims
 	UserId int64 `json:"user_id"`
 	LogIn  string `json:"log_in"`
+	Role   int32 `json:"role"`
 }
 
 type CodeFlowClaime struct {
