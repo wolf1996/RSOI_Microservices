@@ -1,0 +1,38 @@
+syntax  = "proto3";
+
+message ViewInfo{
+    string userLogin = 1;
+    string path  = 2;
+}
+
+message ChangeInfo{
+    string userLogin = 1;
+    string path  = 2;
+}
+
+message LoginEvent{
+    bool ok = 1;
+    string result  = 2;
+}
+
+message LoginEvents{
+    repeated LoginEvent data = 1;
+}
+
+message ChangeInfos {
+    repeated ChangeInfo data = 1;
+}
+
+message ViewInfos {
+    repeated ViewInfo data = 1;
+}
+
+message Empty{}
+
+service StatisticService {
+    rpc GetLogins(Empty) returns (LoginEvents){};
+    rpc GetChanges(Empty) returns ( ChangeInfos){};
+    rpc GetViews(Empty) returns ( ViewInfos){};
+}
+
+//protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:server ./server.protoc
