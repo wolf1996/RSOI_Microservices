@@ -54,5 +54,9 @@
       "db":1,
       "hash_name":"gateway_stats"
     }
+  },
+  "stat_service": {
+    "addres":"localhost:8004",
+    "crt":"/home/ksg/disk_d/labs2017M/RSOI/2/security/stats/server.crt"
   }
 }

@@ -8,6 +8,8 @@ import (
 	"github.com/wolf1996/gateway/resources/userclient"
 	"github.com/wolf1996/gateway/resources/authclient"
 	"github.com/wolf1996/stats/client"
+	"log"
+	"github.com/wolf1996/gateway/resources/statsclient"
 )
 
 func parseViper() appserver.GatewayConfig {
@@ -43,9 +45,12 @@ func parseViper() appserver.GatewayConfig {
 	statsconf.RedConf.HashName = viper.GetString("stats.redis.hash_name")
 	statsconf.RedConf.Addres = viper.GetString("stats.redis.addres")
 	statsconf.RedConf.Db = viper.GetInt("stats.redis.db")
+	var statsCliConf statsclient.Config
+	statsCliConf.Addres = viper.GetString("stat_service.addres")
+ 	statsCliConf.Crt =  viper.GetString("stat_service.crt")
 	return appserver.GatewayConfig{port, userclient.Config{userServiceAddres, crtUser, userQue},
 		eventsclient.Config{eventServiceAddres, crtEvent, eventQue}, registrationclient.Config{registrationServiceAddres, crtRegs},
-		authclient.Config{authAddres, crtAuth}, statsconf}
+		authclient.Config{authAddres, crtAuth}, statsconf, statsCliConf}
 }
 
 func prepareViper() {
@@ -58,5 +63,8 @@ func prepareViper() {
 func main() {
 	prepareViper()
 	conf := parseViper()
-	appserver.StartServer(conf)
+	err := appserver.StartServer(conf)
+	if err != nil {
+		log.Print(err.Error())
+	}
 }

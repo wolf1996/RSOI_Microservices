@@ -24,6 +24,12 @@ registrationsclient:
 	cp ../registration/server.protoc regserver.proto
 	protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:regserver ./regserver.proto
 
+statsclient:
+	mkdir -p statserver
+	cp ../stats/server.proto statserver.proto
+	protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:statserver ./statserver.proto
+
+
 token:
 	mkdir -p token
 	cp ../auth/token.proto token.proto
@@ -35,6 +41,7 @@ clients: \
     userclient \
     eventsclient \
     registrationsclient \
+    statsclient \
     token
 
 build_gateway_server:

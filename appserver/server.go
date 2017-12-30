@@ -12,6 +12,7 @@ import (
 	"github.com/wolf1996/gateway/appserver/middleware"
 	"github.com/wolf1996/gateway/token"
 	"github.com/wolf1996/stats/client"
+	"github.com/wolf1996/gateway/resources/statsclient"
 )
 
 type GatewayConfig struct {
@@ -21,6 +22,7 @@ type GatewayConfig struct {
 	RegistrationInfoConf registrationclient.Config
 	AuthConf             authclient.Config
 	StatsConf			 client.Config
+	StatsServConf        statsclient.Config
 }
 
 var port string
@@ -31,6 +33,7 @@ func applyConfig(config GatewayConfig) {
 	eventsclient.SetConfigs(config.EventsInfoConf)
 	registrationclient.SetConfigs(config.RegistrationInfoConf)
 	authclient.SetConfigs(config.AuthConf)
+	statsclient.SetConfigs(config.StatsServConf)
 }
 
 func StartServer(config GatewayConfig) error {
@@ -62,6 +65,9 @@ func StartServer(config GatewayConfig) error {
 	router.GET("/events/:pagenum", controllers.GetEvents)
 	router.POST("/login",controllers.LogIn)
 	router.POST("/shiftcode", controllers.GetShiftCodeflow)
+	router.GET("/statistic/views", controllers.GetViewsStats)
+	router.GET("/statistic/changes", controllers.GetChangesStats)
+	router.GET("/statistic/logins", controllers.GetLoginStats)
 	router.Run(port)
 	return nil
 }
