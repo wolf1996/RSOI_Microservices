@@ -23,6 +23,7 @@ func updateTokens(c *gin.Context)(tk token.Token, err error){
 	}
 	c.SetCookie("RefreshToken",ref,0,"","127.0.0.1",false,false)
 	c.SetCookie("AccessToken",access,0,"","127.0.0.1",false,false)
+	log.Printf("MIDDLEWARE: Token set %s", ref)
 	tk, err  = authclient.ValidateAccessToken(access)
 	return
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/wolf1996/gateway/resources/authclient"
 	"github.com/wolf1996/gateway/appserver/middleware"
 	"github.com/wolf1996/gateway/token"
+	"github.com/wolf1996/stats/client"
 )
 
 type GatewayConfig struct {
@@ -19,6 +20,7 @@ type GatewayConfig struct {
 	EventsInfoConf       eventsclient.Config
 	RegistrationInfoConf registrationclient.Config
 	AuthConf             authclient.Config
+	StatsConf			 client.Config
 }
 
 var port string
@@ -32,6 +34,10 @@ func applyConfig(config GatewayConfig) {
 }
 
 func StartServer(config GatewayConfig) error {
+	err := client.StartApplication(config.StatsConf)
+	if err != nil {
+		return err
+	}
 	applyConfig(config)
 	router := gin.Default()
 	auth := router.Group("/", middleware.TokenAuth())

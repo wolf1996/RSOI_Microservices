@@ -10,12 +10,14 @@ import (
 	"github.com/wolf1996/gateway/resources/authclient"
 	"github.com/wolf1996/gateway/appserver/middleware"
 	"github.com/wolf1996/gateway/token"
+	"github.com/wolf1996/stats/client"
 	"strconv"
 )
 
 func GetUserInfo(c *gin.Context) {
 	tkn := c.MustGet(middleware.AtokenName).(token.Token)
 	id := tkn.LogIn
+	client.WriteInfoViewMessage(c.Request.URL.Path,id)
 	var inf views.UserInfo
 	res, err := userclient.GetUserInfo(id)
 	if err != nil {

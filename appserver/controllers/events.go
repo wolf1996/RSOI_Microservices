@@ -7,9 +7,11 @@ import (
 	"net/http"
 	"strconv"
 	"log"
+	"github.com/wolf1996/stats/client"
 )
 
 func GetEventInfo(c *gin.Context) {
+	client.WriteInfoViewMessage(c.Request.URL.Path,"")
 	var inf views.EventInfo
 	key,err := strconv.ParseInt(c.Param("event_id"), 10, 64)
 	if err != nil {
@@ -34,6 +36,7 @@ func GetEventInfo(c *gin.Context) {
 }
 
 func GetEvents(c *gin.Context){
+	client.WriteInfoViewMessage(c.Request.URL.Path,"")
 	strparam := c.Param("pagenum")
 	if len(strparam) == 0 {
 		strparam = "1"

@@ -7,6 +7,7 @@ import (
 	"github.com/wolf1996/gateway/resources/registrationclient"
 	"github.com/wolf1996/gateway/resources/userclient"
 	"github.com/wolf1996/gateway/resources/authclient"
+	"github.com/wolf1996/stats/client"
 )
 
 func parseViper() appserver.GatewayConfig {
@@ -28,9 +29,23 @@ func parseViper() appserver.GatewayConfig {
 	authAddres := viper.GetString("auth_service.addres")
 	crtAuth := viper.GetString("auth_service.crt")
 	userQue := userclient.QConfig{addres, user, pass}
+	var statsconf client.Config
+	statsconf.ProducerName = viper.GetString("stats.name")
+	statsconf.Sconfig.BufferSize = viper.GetInt("stats.handler.buffer_size")
+	statsconf.Sconfig.Rabbit.Addres = viper.GetString("stats.handler.rabbit.addres")
+	statsconf.Sconfig.Rabbit.User = viper.GetString("stats.handler.rabbit.user")
+	statsconf.Sconfig.Rabbit.Pass = viper.GetString("stats.handler.rabbit.password")
+	statsconf.ChConfig.BufferSize  = viper.GetInt("stats.response.buffer_size")
+	statsconf.ChConfig.Rabbit.Addres = viper.GetString("stats.response.rabbit.addres")
+	statsconf.ChConfig.Rabbit.User = viper.GetString("stats.response.rabbit.user")
+	statsconf.ChConfig.Rabbit.Pass = viper.GetString("stats.response.rabbit.password")
+	statsconf.TimeOut = viper.GetInt64("stats.timeout")
+	statsconf.RedConf.HashName = viper.GetString("stats.redis.hash_name")
+	statsconf.RedConf.Addres = viper.GetString("stats.redis.addres")
+	statsconf.RedConf.Db = viper.GetInt("stats.redis.db")
 	return appserver.GatewayConfig{port, userclient.Config{userServiceAddres, crtUser, userQue},
 		eventsclient.Config{eventServiceAddres, crtEvent, eventQue}, registrationclient.Config{registrationServiceAddres, crtRegs},
-		authclient.Config{authAddres, crtAuth}}
+		authclient.Config{authAddres, crtAuth}, statsconf}
 }
 
 func prepareViper() {
