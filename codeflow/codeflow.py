@@ -9,7 +9,7 @@ hostname = "localhost"
 
 sess = None
 class MyHandler(http.server.BaseHTTPRequestHandler):
-    def do_POST(self):
+    def do_GET(self):
         self.address_string
         self.send_response(200)
         self.send_header('Content-type','text/html')

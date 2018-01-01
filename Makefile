@@ -34,31 +34,38 @@ auth_start:
 frontend_start:
 	$(MAKE) -C ../frontend start
 
+stats_start:
+	$(MAKE) -C ../stats start
+
 start_all: \
 	user_start \
 	event_start \
 	registration_start \
 	gateway_start \
 	auth_start \
-	frontend_start
+	frontend_start \
+	stats_start 
 
 user_stop:
-	$(MAKE) -C ../user stop
+	-$(MAKE) -C ../user stop
 
 event_stop:
-	$(MAKE) -C ../events stop
+	-$(MAKE) -C ../events stop
 
 registration_stop:
-	$(MAKE) -C ../registration stop
+	-$(MAKE) -C ../registration stop
 
 gateway_stop:
-	$(MAKE) -C ../gateway stop
+	-$(MAKE) -C ../gateway stop
 
 auth_stop:
-	$(MAKE) -C ../auth stop
+	-$(MAKE) -C ../auth stop
 
 frontend_stop:
-	$(MAKE) -C ../frontend stop
+	-$(MAKE) -C ../frontend stop
+
+stats_stop:
+	-$(MAKE) -C ../stats stop
 
 stop_all: \
 	user_stop \
@@ -66,7 +73,8 @@ stop_all: \
 	registration_stop \
 	gateway_stop \
 	auth_stop \
-	frontend_stop
+	frontend_stop \
+	stats_stop
 
 user_build:
 	$(MAKE) -C ../user build
@@ -86,10 +94,14 @@ auth_build:
 frontend_build:
 	$(MAKE) -C ../frontend build
 
+stats_build:
+	$(MAKE) -C ../stats build
+
 build_all: \
 	user_build \
 	event_build \
 	registration_build \
 	gateway_build  \
 	auth_build \
-	frontend_build
+    frontend_build \
+	stats_build
