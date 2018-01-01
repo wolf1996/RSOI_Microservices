@@ -60,14 +60,15 @@ func StartServer(config GatewayConfig) error {
 	auth.GET("/user/info", controllers.GetUserInfo)
 	auth.GET("/get_access/:id", controllers.GetAccess)
 	auth.POST("/get_access/:id", controllers.AllowAccess)
+	auth.GET("/statistic/views", controllers.GetViewsStats)
+	auth.GET("/statistic/changes", controllers.GetChangesStats)
+	auth.GET("/statistic/logins", controllers.GetLoginStats)
+
 
 	router.GET("/event/:event_id", controllers.GetEventInfo)
 	router.GET("/events/:pagenum", controllers.GetEvents)
 	router.POST("/login",controllers.LogIn)
 	router.POST("/shiftcode", controllers.GetShiftCodeflow)
-	router.GET("/statistic/views", controllers.GetViewsStats)
-	router.GET("/statistic/changes", controllers.GetChangesStats)
-	router.GET("/statistic/logins", controllers.GetLoginStats)
 	router.Run(port)
 	return nil
 }

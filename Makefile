@@ -11,17 +11,17 @@ cleanprotocs:
 
 userclient:
 	mkdir -p usserver
-	cp ../user/server.protoc usserver.proto
+	cp ../user/server.proto usserver.proto
 	protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:usserver ./usserver.proto
 
 eventsclient:
 	mkdir -p evserver
-	cp ../events/server.protoc evserver.proto
+	cp ../events/server.proto evserver.proto
 	protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:evserver ./evserver.proto
 
 registrationsclient:
 	mkdir -p regserver
-	cp ../registration/server.protoc regserver.proto
+	cp ../registration/server.proto regserver.proto
 	protoc --plugin=/home/ksg/disk_d/GoLang/bin/protoc-gen-go --go_out=plugins=grpc:regserver ./regserver.proto
 
 statsclient:
