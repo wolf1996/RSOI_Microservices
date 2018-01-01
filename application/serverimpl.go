@@ -63,8 +63,9 @@ func (inst *AuthServerInstance)GetTokenpair(cnt context.Context,spar *token.Sign
 	defer func() {
 		if err != nil {
 			client.WriteLoginMessage(false, err.Error())
+		} else {
+			client.WriteLoginMessage(true, "Success LogIn")
 		}
-		client.WriteLoginMessage(true, "Sccess LogIn")
 	}()
 	tkns = &token.Tokenpair{&token.AccessTokenMsg{}, &token.RefreshTokenMsg{}}
 	uinf, err := models.CheckPass(models.LogIn{Login:spar.Login,Pass:spar.Pass})
