@@ -16,12 +16,12 @@ create_database:
 	
 server:
 	mkdir -p server
-	protoc --plugin=$(PROTOCPLUG) --go_out=plugins=grpc:server ./server.protoc
+	protoc --plugin=$(PROTOCPLUG) --go_out=plugins=grpc:server ./server.proto
 
 authtoken:
 	mkdir -p authtoken
-	cp ../auth/token.protoc token.protoc
-	protoc --plugin=$(PROTOCPLUG) --go_out=plugins=grpc:authtoken ./token.protoc
+	cp ../auth/token.protoc token.proto
+	protoc --plugin=$(PROTOCPLUG) --go_out=plugins=grpc:authtoken ./token.proto
 
 build_source:
 	GOPATH=$(GOPATH) go build -o $(GOPATH)/bin/user main.go
