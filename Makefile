@@ -5,8 +5,8 @@ PROTOCPLUG=/home/ksg/go/bin/protoc-gen-go
 
 authtoken:
 	mkdir -p token
-	cp ../auth/token.proto token.protoc
-	protoc --plugin=$(PROTOCPLUG) --go_out=plugins=grpc:token ./token.protoc
+	cp ../auth/token.proto token.proto
+	protoc --plugin=$(PROTOCPLUG) --go_out=plugins=grpc:token ./token.proto
 
 server:
 	mkdir -p server
