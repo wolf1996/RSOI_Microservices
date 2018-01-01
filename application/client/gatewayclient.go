@@ -193,3 +193,60 @@ func GivAccess(id int64, urlRed string, cookies []*http.Cookie) (cinf gatewayvie
 	err = json.Unmarshal(bdy,&cinf)
 	return
 }
+
+func GetViewStats(cookies []*http.Cookie)(regs []gatewayview.ViewEvent, resp *http.Response, err error){
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/statistic/views", addres), nil)
+	for _, i := range cookies{
+		req.AddCookie(i)
+	}
+	resp, err = http.DefaultClient.Do(req)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	bdy, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+	log.Print(string(bdy))
+	err = json.Unmarshal(bdy,&regs)
+	return
+}
+
+func GetChangeStats(cookies []*http.Cookie)(regs []gatewayview.ChangeEvent, resp *http.Response, err error){
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/statistic/changes", addres), nil)
+	for _, i := range cookies{
+		req.AddCookie(i)
+	}
+	resp, err = http.DefaultClient.Do(req)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	bdy, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+	log.Print(string(bdy))
+	err = json.Unmarshal(bdy,&regs)
+	return
+}
+
+func GetLoginStats(cookies []*http.Cookie)(regs []gatewayview.LoginEvent, resp *http.Response, err error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/statistic/views", addres), nil)
+	for _, i := range cookies {
+		req.AddCookie(i)
+	}
+	resp, err = http.DefaultClient.Do(req)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	bdy, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+	log.Print(string(bdy))
+	err = json.Unmarshal(bdy, &regs)
+	return
+}

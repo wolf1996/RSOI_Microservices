@@ -1,0 +1,24 @@
+{{define "title"}}
+<title>Title</title>
+<link rel="stylesheet" href="/static/navbar.css">
+<link rel="stylesheet" href="/static/table.css">
+<link rel="stylesheet" href="/static/pagination.css">
+<link rel="stylesheet" href="/static/pagebtn.css">
+{{end}}
+{{define "content"}}
+<br>
+<br>
+<table>
+    <tr>
+        <th>Ok </th>
+        <th>Информация</th>
+    </tr>
+{{range $i, $x := $.events}}
+    <tr>
+        <th>{{$x.Ok}}</th>
+        <th>{{$x.Info}}</th>
+    </tr>
+{{end}}
+</table>
+
+{{end}}

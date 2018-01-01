@@ -66,6 +66,9 @@ func StartApplication(config Config)(err error){
 	router.POST("/login", controller.LogInHandler)
 	router.GET("/access/:id", controller.BigRedButton)
 	router.POST("/access/:id", controller.GiveAccess)
+	router.GET("/stats/view", controller.GetViewsStats)
+	router.GET("/stats/change", controller.GetChangesStats)
+	router.GET("/stats/login", controller.GetLoginStats)
 	err = router.Run(config.Port)
 	return
 }
