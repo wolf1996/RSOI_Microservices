@@ -1,0 +1,14 @@
+syntax  = "proto3";
+
+package token;
+
+message Token {
+    int64 Id = 2;
+    string LogIn = 3;
+    enum Roles {
+        USER = 0;
+        ADMIN = 1;
+        APP = 2;
+    }
+    Roles Role = 4;
+}

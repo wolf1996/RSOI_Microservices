@@ -4,16 +4,16 @@ LOGFILE= $(GOPATH)/logs/registration.log
 PROTOCPLUG=/home/ksg/go/bin/protoc-gen-go
 
 authtoken:
-	mkdir -p authtoken
-	cp ../auth/token.protoc token.protoc
-	protoc --plugin=$(PROTOCPLUG) --go_out=plugins=grpc:authtoken ./token.protoc
+	mkdir -p token
+	cp ../auth/token.proto token.proto
+	protoc --plugin=$(PROTOCPLUG) --go_out=plugins=grpc:token ./token.proto
 
 create_database:
 	PGPASSWORD=123456 psql -U postgres -f schema.sql
 
 server:
 	mkdir -p server
-	protoc --plugin=$(PROTOCPLUG) --go_out=plugins=grpc:server ./server.protoc
+	protoc --plugin=$(PROTOCPLUG) --go_out=plugins=grpc:server ./server.proto
 
 clean_protoc:
 	rm -rf server

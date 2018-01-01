@@ -5,13 +5,13 @@ import (
 	"log"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/wolf1996/gateway/authtoken"
 	"github.com/wolf1996/registration/application/models"
 	"github.com/wolf1996/registration/server"
+	"github.com/wolf1996/registration/token"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 )
 
 type GprsServerInstance struct {
@@ -20,55 +20,55 @@ type GprsServerInstance struct {
 func (inst GprsServerInstance) GetRegistrationInfo(cont context.Context, id *server.RegistrationId) (infV *server.RegistrationInfo, err error) {
 	infV = new(server.RegistrationInfo)
 	inf, err := models.GetRegistration(id.Id)
-	if (err != nil) {
+	if err != nil {
 		log.Print(err.Error())
 	}
 	switch err {
 	case models.EmptyResult:
-		err = grpc.Errorf(codes.NotFound, "Can't find any registrations") 
+		err = grpc.Errorf(codes.NotFound, "Can't find any registrations")
 	case nil:
 		break
 	default:
-		err =  grpc.Errorf(codes.Unknown , "server Error") 
+		err = grpc.Errorf(codes.Unknown, "server Error")
 	}
-	infV = &server.RegistrationInfo{inf.Id, inf.UserId, inf.EventId}			
+	infV = &server.RegistrationInfo{inf.Id, inf.UserId, inf.EventId}
 	return
 }
 
 func (inst GprsServerInstance) AddRegistration(ctx context.Context, in *server.RegistrationToAdd) (infV *server.RegistrationInfo, err error) {
-	infV = new(server.RegistrationInfo)	
+	infV = new(server.RegistrationInfo)
 	inf, err := models.AddRegistration(in.UserId, in.EventId)
 	if err != nil {
 		log.Printf(err.Error())
 		switch err {
 		case models.EmptyResult:
-			err =  grpc.Errorf(codes.NotFound, "Empty result")
+			err = grpc.Errorf(codes.NotFound, "Empty result")
 		case models.AddError:
-			err =  grpc.Errorf(codes.NotFound, "Can't add registration")
+			err = grpc.Errorf(codes.NotFound, "Can't add registration")
 		default:
-			err =  grpc.Errorf(codes.Unknown , "server Error")
+			err = grpc.Errorf(codes.Unknown, "server Error")
 		}
 		return
 	}
-	infV = &server.RegistrationInfo{inf.Id, inf.UserId, inf.EventId}			
+	infV = &server.RegistrationInfo{inf.Id, inf.UserId, inf.EventId}
 	return
 }
 
 func (inst GprsServerInstance) RemoveRegistration(cont context.Context, id *server.RegistrationId) (infV *server.RegistrationInfo, err error) {
-	infV = new(server.RegistrationInfo)	
+	infV = new(server.RegistrationInfo)
 	md, ok := metadata.FromIncomingContext(cont)
 	if !ok {
 		log.Print("Can't find metadata")
-		err = grpc.Errorf(codes.InvalidArgument ,"Can't find metadata")
+		err = grpc.Errorf(codes.InvalidArgument, "Can't find metadata")
 		return
 	}
 	tks, ok := md["token"]
 	if (!ok) || (len(tks) < 1) {
 		log.Print("Can't find token")
-		err = grpc.Errorf(codes.InvalidArgument ,"Can't find token")
+		err = grpc.Errorf(codes.InvalidArgument, "Can't find token")
 		return
 	}
-	tk := authtoken.Token{}
+	tk := token.Token{}
 	btk, err := base64.StdEncoding.DecodeString(tks[0])
 	err = proto.Unmarshal(btk, &tk)
 	if err != nil {
@@ -81,35 +81,35 @@ func (inst GprsServerInstance) RemoveRegistration(cont context.Context, id *serv
 		log.Printf(err.Error())
 		switch err {
 		case models.EmptyResult:
-			err =  grpc.Errorf(codes.NotFound, "Empty result")
+			err = grpc.Errorf(codes.NotFound, "Empty result")
 		case models.AddError:
-			err =  grpc.Errorf(codes.NotFound, "Can't add registration")
+			err = grpc.Errorf(codes.NotFound, "Can't add registration")
 		default:
-			err =  grpc.Errorf(codes.Unknown , "server Error")
+			err = grpc.Errorf(codes.Unknown, "server Error")
 		}
 		return
 	}
-	infV = &server.RegistrationInfo{inf.Id, inf.UserId, inf.EventId}			
+	infV = &server.RegistrationInfo{inf.Id, inf.UserId, inf.EventId}
 	return
 }
 
 func (inst GprsServerInstance) GetUserRegistrations(req *server.UsersRegistrationsRequest, stream server.RegistrationService_GetUserRegistrationsServer) (err error) {
 	if req.PageNumber <= 0 {
-		return grpc.Errorf(codes.InvalidArgument ,"Invalid page name %s", req.PageSize)		
+		return grpc.Errorf(codes.InvalidArgument, "Invalid page name %s", req.PageSize)
 	}
 	if req.PageSize <= 0 {
-		return grpc.Errorf(codes.InvalidArgument ,"Invalid page size %s", req.PageSize)
+		return grpc.Errorf(codes.InvalidArgument, "Invalid page size %s", req.PageSize)
 	}
 	err = models.GetUserRegistrations(req.UserId, req.PageNumber-1, req.PageSize, stream)
 	if err != nil {
 		log.Printf(err.Error())
 		switch err {
 		case models.EmptyResult:
-			err =  grpc.Errorf(codes.NotFound, "Empty result")
+			err = grpc.Errorf(codes.NotFound, "Empty result")
 		case models.AddError:
-			err =  grpc.Errorf(codes.NotFound, "Can't add registration")
+			err = grpc.Errorf(codes.NotFound, "Can't add registration")
 		default:
-			err =  grpc.Errorf(codes.Unknown , "server Error")
+			err = grpc.Errorf(codes.Unknown, "server Error")
 		}
 		return
 	}
