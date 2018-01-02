@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"encoding/json"
+	"github.com/wolf1996/gateway/token"
+	"github.com/golang/protobuf/proto"
 )
 
 var ch *amqp.Channel
@@ -17,14 +19,22 @@ type QConfig struct {
 	Pass string
 }
 
-func handler(msg resources.MessageTokened)(err error){
+func handler(msg resources.MessageTokened, tn token.Token)(err error){
 	body, err := json.Marshal(msg)
 	if err != nil {
 		return
 	}
+	cds := amqp.Table{}
+	mg, err :=proto.MarshalMessageSetJSON(tn)
+	if err != nil {
+		return
+	}
+	cds["token"] = mg
+
 	mesg := amqp.Publishing{
 		ContentType: "application/json",
 		Body: body,
+		Headers: cds,
 	}
 	err = ch.Publish(
 		"",
@@ -39,13 +49,14 @@ func handler(msg resources.MessageTokened)(err error){
 	return
 }
 
-func DecrementEventsCounter(eventId int64) (err error){
+func DecrementEventsCounter(eventId int64, token token.Token) (err error){
 	return handler(resources.MessageTokened{
 		Token:  "",
 		Message:DecrementRegistration{
 			EventId: eventId,
 		},
-	})
+	},
+	token)
 }
 
 func ApplyConfig(conf QConfig)(err error){

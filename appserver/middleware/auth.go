@@ -43,17 +43,31 @@ func processToken(c *gin.Context) (tk token.Token, err error){
 	return
 }
 
-func TokenAuth() gin.HandlerFunc{
+func TokenProcess() gin.HandlerFunc{
 	return func(c *gin.Context) {
 		tkn, err := processToken(c)
 		if err != nil {
 			log.Printf("MIDDLEWARE: %s", err.Error())
-			c.JSON(http.StatusBadRequest, views.Error{"Token validation error"})
-			c.Abort()
+			c.Next()
 			return
 		}
 		log.Printf("Token set id=%d login=%s", tkn.Id, tkn.LogIn)
 		c.Set(AtokenName, tkn)
+		c.Next()
+		return
+	}
+}
+
+
+func AuthRequire() gin.HandlerFunc{
+	return func(c *gin.Context) {
+		_, exist := c.Get(AtokenName)
+		if !exist {
+			log.Print("MIDDLEWARE: Not authorised ")
+			c.JSON(http.StatusForbidden, views.Error{"You need to be authorised"})
+			c.Abort()
+			return
+		}
 		c.Next()
 		return
 	}

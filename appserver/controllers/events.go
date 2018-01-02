@@ -8,9 +8,18 @@ import (
 	"strconv"
 	"log"
 	"github.com/wolf1996/stats/client"
+	"github.com/wolf1996/gateway/appserver/middleware"
+	"github.com/wolf1996/gateway/token"
 )
 
 func GetEventInfo(c *gin.Context) {
+	tknBuf, exists := c.Get(middleware.AtokenName)
+	var tkn token.Token
+	if exists {
+		tkn = tknBuf.(token.Token)
+	} else {
+		tkn.Role = token.Token_ANONIM
+	}
 	client.WriteInfoViewMessage(c.Request.URL.Path,"")
 	var inf views.EventInfo
 	key,err := strconv.ParseInt(c.Param("event_id"), 10, 64)
@@ -19,7 +28,7 @@ func GetEventInfo(c *gin.Context) {
 		c.JSON(http.StatusNotFound, views.Error{err.Error()})
 		return
 	}
-	info, err := eventsclient.GetEventInfo(key)
+	info, err := eventsclient.GetEventInfo(key, tkn)
 	if err != nil {
 		log.Print(err.Error())
 		err, code := eventsclient.ErrorTransform(err)
@@ -36,6 +45,13 @@ func GetEventInfo(c *gin.Context) {
 }
 
 func GetEvents(c *gin.Context){
+	tknBuf, exists := c.Get(middleware.AtokenName)
+	var tkn token.Token
+	if exists {
+		tkn = tknBuf.(token.Token)
+	} else {
+		tkn.Role = token.Token_ANONIM
+	}
 	client.WriteInfoViewMessage(c.Request.URL.Path,"")
 	strparam := c.Param("pagenum")
 	if len(strparam) == 0 {
@@ -57,7 +73,7 @@ func GetEvents(c *gin.Context){
 		c.JSON(http.StatusBadRequest, views.Error{err.Error()})
 		return
 	}
-	info, err := eventsclient.GetEvents(pasize, pnum, "")
+	info, err := eventsclient.GetEvents(pasize, pnum, "", tkn)
 	if err != nil {
 		log.Print(err.Error())
 		err, code := eventsclient.ErrorTransform(err)

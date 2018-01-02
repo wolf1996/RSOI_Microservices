@@ -11,6 +11,9 @@ import (
 	"github.com/wolf1996/gateway/regserver"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"github.com/wolf1996/gateway/token"
+	"github.com/golang/protobuf/proto"
+	"encoding/base64"
 )
 
 type Config struct {
@@ -38,7 +41,7 @@ func SetConfigs(config Config) {
 	}
 }
 
-func AddRegistration(userId string, eventId int64) (infoV RegistrationInfo, err error) {
+func AddRegistration(userId string, eventId int64, token token.Token) (infoV RegistrationInfo, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError
@@ -57,7 +60,7 @@ func AddRegistration(userId string, eventId int64) (infoV RegistrationInfo, err 
 	return
 }
 
-func GetRegistrationInfo(id int64) (infoV RegistrationInfo, err error) {
+func GetRegistrationInfo(id int64, token token.Token) (infoV RegistrationInfo, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError
@@ -76,12 +79,19 @@ func GetRegistrationInfo(id int64) (infoV RegistrationInfo, err error) {
 	return
 }
 
-func RemoveRegistration(id int64, md metadata.MD) (infoV RegistrationInfo, err error) {
+func RemoveRegistration(id int64, token token.Token) (infoV RegistrationInfo, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError
 		return
 	}
+	btTok, err := proto.MarshalMessageSetJSON(&token)
+	if err != nil {
+		log.Print(err.Error())
+		return
+	}
+	strTok := base64.StdEncoding.EncodeToString(btTok)
+	md := metadata.Pairs("token", strTok)
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 	cli := regserver.NewRegistrationServiceClient(conn)
 	info, err := cli.RemoveRegistration(ctx, &regserver.RegistrationId{id})
@@ -96,7 +106,7 @@ func RemoveRegistration(id int64, md metadata.MD) (infoV RegistrationInfo, err e
 	return
 }
 
-func GetRegistrations(id string, pageNum int64, pageSize int64) (info []RegistrationInfo, err error) {
+func GetRegistrations(id string, pageNum int64, pageSize int64, token token.Token) (info []RegistrationInfo, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError

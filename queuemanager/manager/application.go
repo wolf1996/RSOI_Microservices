@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"encoding/json"
 	"github.com/wolf1996/gateway/resources/userclient"
+	"github.com/golang/protobuf/proto"
+	"github.com/wolf1996/gateway/token"
 )
 
 type RabbitConfig struct {
@@ -22,6 +24,12 @@ type Config struct {
 }
 
 func UserIteration(msg amqp.Delivery)(err error){
+	tknS := msg.Headers["token"].([]byte)
+	var tkn token.Token
+	err = proto.UnmarshalMessageSetJSON(tknS, &tkn)
+	if err != nil {
+		return
+	}
 	message := userclient.MessageTokened{}
 	err = json.Unmarshal(msg.Body,&message)
 	if err != nil {
@@ -29,11 +37,17 @@ func UserIteration(msg amqp.Delivery)(err error){
 	}
 	id := message.Message.UserId
 	log.Printf("Processing User %d", id)
-	_, err = userclient.DecrementEventsCounter(id)
+	_, err = userclient.DecrementEventsCounter(id, tkn)
 	return
 }
 
 func EventIteration( msg amqp.Delivery)(err error){
+	tknS := msg.Headers["token"].([]byte)
+	var tkn token.Token
+	err = proto.UnmarshalMessageSetJSON(tknS, &tkn)
+	if err != nil {
+		return
+	}
 	message := eventsclient.MessageTokened{}
 	err = json.Unmarshal(msg.Body,&message)
 	if err != nil {
@@ -41,7 +55,7 @@ func EventIteration( msg amqp.Delivery)(err error){
 	}
 	id := message.Message.EventId
 	log.Printf("Processing Event %d", id)
-	_, err = eventsclient.DecrementEventUsers(id)
+	_, err = eventsclient.DecrementEventUsers(id, tkn)
 	return
 }
 

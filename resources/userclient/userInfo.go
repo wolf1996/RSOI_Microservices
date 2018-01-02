@@ -8,6 +8,7 @@ import (
 	"github.com/wolf1996/gateway/usserver"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"github.com/wolf1996/gateway/token"
 )
 
 type Config struct {
@@ -39,7 +40,7 @@ func SetConfigs(config Config) {
 	}
 }
 
-func IncrementEventsCounter(id string) (uinf *UserInfo, err error) {
+func IncrementEventsCounter(id string, token token.Token) (uinf *UserInfo, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError
@@ -53,7 +54,7 @@ func IncrementEventsCounter(id string) (uinf *UserInfo, err error) {
 	return &UserInfo{info.Name, info.EventsSubscribed, info.Id}, nil
 }
 
-func DecrementEventsCounter(id string) (uinf *UserInfo, err error) {
+func DecrementEventsCounter(id string, token token.Token) (uinf *UserInfo, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError
@@ -67,12 +68,12 @@ func DecrementEventsCounter(id string) (uinf *UserInfo, err error) {
 	return &UserInfo{info.Name, info.EventsSubscribed, info.Id}, nil
 }
 
-func DecrementEventsCounterAsync(id string) (err error) {
-	UserEventsDecrementCounter(id)
+func DecrementEventsCounterAsync(id string, token token.Token) (err error) {
+	UserEventsDecrementCounter(id, token)
 	return nil
 }
 
-func GetUserInfo(id string) (uinf *UserInfo, err error) {
+func GetUserInfo(id string, token token.Token) (uinf *UserInfo, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError

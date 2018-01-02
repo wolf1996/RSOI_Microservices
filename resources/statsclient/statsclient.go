@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc"
 	"context"
 	"github.com/wolf1996/gateway/statserver"
+	"github.com/wolf1996/gateway/token"
 )
 
 
@@ -45,7 +46,7 @@ func SetConfigs(config Config) {
 	}
 }
 
-func GetLogins() (info []LoginEvent, err error) {
+func GetLogins( token token.Token) (info []LoginEvent, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError
@@ -75,7 +76,7 @@ func GetLogins() (info []LoginEvent, err error) {
 }
 
 
-func GetViewEvents() (info []ViewEvent, err error) {
+func GetViewEvents( token token.Token) (info []ViewEvent, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError
@@ -104,7 +105,7 @@ func GetViewEvents() (info []ViewEvent, err error) {
 	return
 }
 
-func GetChangeEvents() (info []ChangeEvent, err error) {
+func GetChangeEvents( token token.Token) (info []ChangeEvent, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError

@@ -10,6 +10,7 @@ import (
 
 	"github.com/wolf1996/gateway/evserver"
 	"google.golang.org/grpc"
+	"github.com/wolf1996/gateway/token"
 )
 
 type Config struct {
@@ -42,7 +43,7 @@ func SetConfigs(config Config) {
 	}
 }
 
-func GetEventInfo(id int64) (uinf *EventInfo, err error) {
+func GetEventInfo(id int64, token token.Token) (uinf *EventInfo, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		return
@@ -55,7 +56,7 @@ func GetEventInfo(id int64) (uinf *EventInfo, err error) {
 	return &EventInfo{info.Id, info.Name, info.Participants, info.Description}, nil
 }
 
-func IncrementEventUsers(id int64) (uinf *EventInfo, err error) {
+func IncrementEventUsers(id int64, token token.Token) (uinf *EventInfo, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		return
@@ -68,7 +69,7 @@ func IncrementEventUsers(id int64) (uinf *EventInfo, err error) {
 	return &EventInfo{info.Id, info.Name, info.Participants, info.Description}, nil
 }
 
-func DecrementEventUsers(id int64) (uinf *EventInfo, err error) {
+func DecrementEventUsers(id int64, token token.Token) (uinf *EventInfo, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		return
@@ -81,12 +82,12 @@ func DecrementEventUsers(id int64) (uinf *EventInfo, err error) {
 	return &EventInfo{info.Id, info.Name, info.Participants, info.Description}, nil
 }
 
-func DecrementEventUsersAsync(id int64) (err error) {
-	DecrementEventsCounter(id)
+func DecrementEventUsersAsync(id int64, token token.Token) (err error) {
+	DecrementEventsCounter(id, token)
 	return
 }
 
-func GetEvents(pageSize int64, pageNum int64, userId string) (events []EventInfo, err error) {
+func GetEvents(pageSize int64, pageNum int64, userId string, token token.Token) (events []EventInfo, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError

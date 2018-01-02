@@ -43,7 +43,8 @@ func StartServer(config GatewayConfig) error {
 	}
 	applyConfig(config)
 	router := gin.Default()
-	auth := router.Group("/", middleware.TokenAuth())
+	rtr := router.Group("/", middleware.TokenProcess())
+	auth := rtr.Group("/",middleware.AuthRequire())
 
 	auth.GET("/hello", func(c *gin.Context) {
 		tkn := c.MustGet(middleware.AtokenName).(token.Token)
@@ -65,10 +66,10 @@ func StartServer(config GatewayConfig) error {
 	auth.GET("/statistic/logins", controllers.GetLoginStats)
 
 
-	router.GET("/event/:event_id", controllers.GetEventInfo)
-	router.GET("/events/:pagenum", controllers.GetEvents)
-	router.POST("/login",controllers.LogIn)
-	router.POST("/shiftcode", controllers.GetShiftCodeflow)
+	rtr.GET("/event/:event_id", controllers.GetEventInfo)
+	rtr.GET("/events/:pagenum", controllers.GetEvents)
+	rtr.POST("/login",controllers.LogIn)
+	rtr.POST("/shiftcode", controllers.GetShiftCodeflow)
 	router.Run(port)
 	return nil
 }

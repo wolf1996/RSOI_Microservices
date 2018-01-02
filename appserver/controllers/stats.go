@@ -6,10 +6,13 @@ import (
 	"log"
 	"github.com/wolf1996/gateway/appserver/views"
 	"net/http"
+	"github.com/wolf1996/gateway/appserver/middleware"
+	"github.com/wolf1996/gateway/token"
 )
 
 func GetViewsStats(c *gin.Context){
-	logs, err := statsclient.GetViewEvents()
+	tkn := c.MustGet(middleware.AtokenName).(token.Token)
+	logs, err := statsclient.GetViewEvents(tkn)
 	if err != nil {
 		log.Print(err.Error())
 		err, code := statsclient.ErrorTransform(err)
@@ -24,7 +27,8 @@ func GetViewsStats(c *gin.Context){
 }
 
 func GetChangesStats(c *gin.Context){
-	logs, err := statsclient.GetChangeEvents()
+	tkn := c.MustGet(middleware.AtokenName).(token.Token)
+	logs, err := statsclient.GetChangeEvents(tkn)
 	if err != nil {
 		log.Print(err.Error())
 		err, code := statsclient.ErrorTransform(err)
@@ -39,7 +43,8 @@ func GetChangesStats(c *gin.Context){
 }
 
 func GetLoginStats(c *gin.Context){
-	logs, err := statsclient.GetLogins()
+	tkn := c.MustGet(middleware.AtokenName).(token.Token)
+	logs, err := statsclient.GetLogins(tkn)
 	if err != nil {
 		log.Print(err.Error())
 		err, code := statsclient.ErrorTransform(err)

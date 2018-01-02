@@ -19,7 +19,7 @@ func GetUserInfo(c *gin.Context) {
 	id := tkn.LogIn
 	client.WriteInfoViewMessage(c.Request.URL.Path,id)
 	var inf views.UserInfo
-	res, err := userclient.GetUserInfo(id)
+	res, err := userclient.GetUserInfo(id, tkn)
 	if err != nil {
 		log.Printf("Error %s", err.Error())
 		err, code := userclient.ErrorTransform(err)

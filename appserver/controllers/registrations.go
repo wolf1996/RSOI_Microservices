@@ -1,13 +1,11 @@
 package controllers
 
 import (
-	"encoding/base64"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang/protobuf/proto"
 	_ "github.com/golang/protobuf/proto"
 	"github.com/wolf1996/gateway/appserver/middleware"
 	"github.com/wolf1996/gateway/appserver/views"
@@ -16,7 +14,6 @@ import (
 	"github.com/wolf1996/gateway/resources/userclient"
 	"github.com/wolf1996/gateway/token"
 	"github.com/wolf1996/stats/client"
-	"google.golang.org/grpc/metadata"
 )
 
 func RegistrateMe(c *gin.Context) {
@@ -30,7 +27,7 @@ func RegistrateMe(c *gin.Context) {
 		c.JSON(http.StatusNotFound, views.Error{err.Error()})
 		return
 	}
-	eventData, err := eventsclient.IncrementEventUsers(key)
+	eventData, err := eventsclient.IncrementEventUsers(key, tkn)
 	if err != nil {
 		log.Print(err.Error())
 		err, code := eventsclient.ErrorTransform(err)
@@ -40,13 +37,13 @@ func RegistrateMe(c *gin.Context) {
 	defer func() {
 		if err != nil {
 			log.Print("Some error occured, revert eventsclient counter")
-			_, errDef := eventsclient.DecrementEventUsers(key)
+			_, errDef := eventsclient.DecrementEventUsers(key, tkn)
 			if errDef != nil {
 				log.Print("Defer error")
 			}
 		}
 	}()
-	userData, err := userclient.IncrementEventsCounter(user)
+	userData, err := userclient.IncrementEventsCounter(user, tkn)
 	if err != nil {
 		log.Print(err.Error())
 		err, code := userclient.ErrorTransform(err)
@@ -57,14 +54,14 @@ func RegistrateMe(c *gin.Context) {
 	defer func() {
 		if err != nil {
 			log.Print("Some error occured, revert user counter")
-			_, errDef := userclient.DecrementEventsCounter(user)
+			_, errDef := userclient.DecrementEventsCounter(user, tkn)
 			if errDef != nil {
 				log.Print("Defer error")
 			}
 		}
 	}()
 
-	regdata, err := registrationclient.AddRegistration(userData.Name, eventData.Id)
+	regdata, err := registrationclient.AddRegistration(userData.Name, eventData.Id, tkn)
 	if err != nil {
 		log.Print(err.Error())
 		err, code := registrationclient.ErrorTransform(err)
@@ -96,29 +93,29 @@ func RemoveRegistration(c *gin.Context) {
 		c.JSON(http.StatusNotFound, views.Error{err.Error()})
 		return
 	}
-	btTok, err := proto.Marshal(&tkn)
-	if err != nil {
-		log.Print(err.Error())
-		c.JSON(http.StatusNotFound, views.Error{err.Error()})
-		return
-	}
-	strTok := base64.StdEncoding.EncodeToString(btTok)
-	md := metadata.Pairs("token", strTok)
-	regdata, err := registrationclient.RemoveRegistration(key, md)
+	//btTok, err := proto.Marshal(&tkn)
+	//if err != nil {
+	//	log.Print(err.Error())
+	//	c.JSON(http.StatusNotFound, views.Error{err.Error()})
+	//	return
+	//}
+	//strTok := base64.StdEncoding.EncodeToString(btTok)
+	//md := metadata.Pairs("token", strTok)
+	regdata, err := registrationclient.RemoveRegistration(key, tkn)
 	if err != nil {
 		log.Print(err.Error())
 		err, code := registrationclient.ErrorTransform(err)
 		c.JSON(code, views.Error{err.Error()})
 		return
 	}
-	err = eventsclient.DecrementEventUsersAsync(regdata.EventId)
+	err = eventsclient.DecrementEventUsersAsync(regdata.EventId, tkn)
 	if err != nil {
 		log.Print(err.Error())
 		err, code := eventsclient.ErrorTransform(err)
 		c.JSON(code, views.Error{err.Error()})
 		return
 	}
-	err = userclient.DecrementEventsCounterAsync(user)
+	err = userclient.DecrementEventsCounterAsync(user, tkn)
 	if err != nil {
 		log.Print(err.Error())
 		err, code := userclient.ErrorTransform(err)
@@ -134,6 +131,7 @@ func RemoveRegistration(c *gin.Context) {
 
 func GetRegisrationInfo(c *gin.Context) {
 	var inf views.RegistrationInfo
+	tkn := c.MustGet(middleware.AtokenName).(token.Token)
 	client.WriteInfoViewMessage(c.Request.URL.Path, "")
 	key, err := strconv.ParseInt(c.Param("registration_id"), 10, 64)
 	if err != nil {
@@ -141,7 +139,7 @@ func GetRegisrationInfo(c *gin.Context) {
 		c.JSON(http.StatusNotFound, views.Error{err.Error()})
 		return
 	}
-	info, err := registrationclient.GetRegistrationInfo(key)
+	info, err := registrationclient.GetRegistrationInfo(key, tkn)
 	if err != nil {
 		log.Print(err.Error())
 		err, code := registrationclient.ErrorTransform(err)
@@ -171,7 +169,7 @@ func GetRegistrations(c *gin.Context) {
 		return
 	}
 	var infs []views.RegistrationInfo
-	res, err := registrationclient.GetRegistrations(id, pnum, 1)
+	res, err := registrationclient.GetRegistrations(id, pnum, 1, tkn)
 	if err != nil {
 		log.Print(err.Error())
 		err, code := registrationclient.ErrorTransform(err)
