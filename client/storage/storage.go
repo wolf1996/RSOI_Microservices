@@ -11,21 +11,25 @@ type Config struct {
 	Addres   string
 	Db int
 	HashName string
+	RetriesHashName string
 }
 
 var (
 	red *redis.Client
 	hashName string
+	retriesHashName string
 )
 
 func ApplyConfig(config Config) (err error) {
-	log.Printf("connect to redis with addreds: %s, db %d, HashName %s", config.Addres, config.Db, config.HashName)
+	log.Printf("connect to redis with addreds: %s,\n  db %d,\n HashName %s," +
+		" RetriesHashName %s\n", config.Addres, config.Db, config.HashName, config.RetriesHashName)
 	red = redis.NewClient(&redis.Options{
 		Addr:     config.Addres,
 		Password: "", // no password set
 		DB:       config.Db,  // use default DB
 	})
 	hashName = config.HashName
+	retriesHashName = config.RetriesHashName
 	err = red.Ping().Err()
 	return
 }
@@ -57,7 +61,7 @@ func GetKey(msgid shared.MessageId) (key string , err error){
 }
 
 
-func AddMessageStorage(msgid shared.MessageId,msg, tp string) (err error){
+func AddMessageStorage(msgid shared.MessageId,msg, tp string, retries int) (err error){
 	key, err := GetKey(msgid)
 	if err != nil{
 		return
@@ -65,23 +69,65 @@ func AddMessageStorage(msgid shared.MessageId,msg, tp string) (err error){
 	vl := GetVal(msg,tp)
 
 	log.Printf("Message key =  %s \n val = %s", key[:], vl)
+	plpn := red.TxPipeline()
+	cnt := plpn.ZAdd(retriesHashName,redis.Z{Score:float64(retries),Member:string(key[:])})
+	if err = cnt.Err(); err != nil {
+		return
+	}
 
-	res := red.HSet(hashName,string(key[:]) ,vl)
+	res := plpn.HSet(hashName,string(key[:]) ,vl)
 	if err = res.Err(); err != nil {
 		return
 	}
+	_, err = plpn.Exec()
 	return
 }
 
+func CleanList() (err error) {
+	retriedRes := red.ZRangeByScore(retriesHashName,redis.ZRangeBy{Min:"-inf",Max:"(1"})
+	if err = retriedRes.Err(); err != nil{
+		return
+	}
+	retried,err := retriedRes.Result()
+	if err != nil {
+		return
+	}
+	for _, name := range retried {
+		red.ZRem(retriesHashName, name)
+		red.HDel(hashName, name)
+	}
+	log.Printf("Deleted %v", retried)
+	retries := red.ZRange(retriesHashName, 0, -1)
+	if err = retries.Err(); err != nil{
+		return
+	}
+	retrDecr,err := retries.Result()
+	if err != nil {
+		return
+	}
+	for _, name := range retrDecr {
+		red.ZIncrBy(retriesHashName,-1, name)
+	}
+	log.Printf("Decremented %v", retrDecr)
+	return
+}
 
-func GetAllMessages()(msglist map[string]string,err error){
+func ReLoadNRefresh()(msglist map[string]string,err error){
+	err = CleanList()
+	if err != nil {
+		return
+	}
 	result := red.HGetAll(hashName)
 	if err = result.Err(); err != nil{
 		return
 	}
 	msglist,err = result.Result()
+	if err != nil {
+		return
+	}
 	return
 }
+
 
 func RemoveMessage(msgid shared.MessageId)(err error)  {
 	key, err := GetKey(msgid)
@@ -89,7 +135,16 @@ func RemoveMessage(msgid shared.MessageId)(err error)  {
 		return
 	}
 	log.Printf("Remove Message key =  %s \n", key[:])
-	res := red.HDel(hashName,key)
-	err = res.Err()
+	plpn := red.TxPipeline()
+	cnt := plpn.ZRem(retriesHashName, key)
+	if err = cnt.Err(); err != nil {
+		return
+	}
+
+	res := plpn.HDel(hashName, key)
+	if err = res.Err(); err != nil {
+		return
+	}
+	_, err = plpn.Exec()
 	return
 }

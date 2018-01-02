@@ -11,6 +11,7 @@ import (
 
 type SenderConfig struct {
 	BufferSize int
+	Retries    int
 	Rabbit RabbitConfig
 }
 
@@ -20,7 +21,8 @@ type MessageContainer struct {
 }
 
 func StartSender(config SenderConfig, timeout int64)(err error, input chan MessageContainer){
-	log.Printf("User: %s, Addres: %s", config.Rabbit.User, config.Rabbit.Addres)
+	log.Printf("User: %s, Addres: %s" +
+		"retries %d", config.Rabbit.User, config.Rabbit.Addres, config.Retries)
 	conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s/",config.Rabbit.User, config.Rabbit.Pass, config.Rabbit.Addres))
 	if err != nil {
 		log.Fatal(err.Error())
@@ -43,11 +45,11 @@ func StartSender(config SenderConfig, timeout int64)(err error, input chan Messa
 		return
 	}
 	input = make(chan MessageContainer, config.BufferSize)
-	go sender(input, time.NewTicker(time.Duration(timeout)*time.Second).C, ch, q)
+	go sender(input, time.NewTicker(time.Duration(timeout)*time.Second).C, ch, q, config.Retries)
 	return
 }
 
-func sender(input chan MessageContainer, ticker <-chan time.Time, ch *amqp.Channel, q amqp.Queue) {
+func sender(input chan MessageContainer, ticker <-chan time.Time, ch *amqp.Channel, q amqp.Queue, retries int) {
 	pblsh := func(container MessageContainer) {
 		mesg := amqp.Publishing{
 			ContentType: "application/json",
@@ -68,12 +70,12 @@ func sender(input chan MessageContainer, ticker <-chan time.Time, ch *amqp.Chann
 		}
 		datastring := string(container.Data[:])
 		log.Printf("datastring is %s", datastring)
-		storage.AddMessageStorage(container.Mid, datastring, container.Mid.MsgType)
+		storage.AddMessageStorage(container.Mid, datastring, container.Mid.MsgType, retries)
 	}
 
 	refresh := func (){
 		log.Printf("Start resending")
-		msgs, err  := storage.GetAllMessages()
+		msgs, err  := storage.ReLoadNRefresh()
 		if err != nil {
 			log.Printf("Failing while getting messages %s", err.Error())
 		}
