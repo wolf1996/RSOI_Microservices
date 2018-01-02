@@ -2,6 +2,9 @@ GOPATH= $(realpath ../../../../)
 PIDFILE= $(GOPATH)/pid/user.pid
 LOGFILE= $(GOPATH)/logs/user.log
 
+.PHONY: authtoken server
+
+
 clean_protoc:
 	rm -rf server
 	rm -rf  token
@@ -20,7 +23,7 @@ server:
 
 authtoken:
 	mkdir -p authtoken
-	cp ../auth/token.protoc token.proto
+	cp ../auth/token.proto token.proto
 	protoc --plugin=$(PROTOCPLUG) --go_out=plugins=grpc:authtoken ./token.proto
 
 build_source:
