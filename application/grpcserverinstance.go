@@ -1,7 +1,6 @@
 package application
 
 import (
-	"encoding/base64"
 	"log"
 
 	"github.com/golang/protobuf/proto"
@@ -12,9 +11,37 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"encoding/base64"
 )
 
 type GprsServerInstance struct {
+}
+
+
+func decodeTokenString(bt string)(tkn token.Token,err error){
+	tk := token.Token{}
+	bts, err := base64.StdEncoding.DecodeString(bt)
+	if err != nil {
+		return
+	}
+	err = proto.Unmarshal(bts, &tk)
+	return
+}
+
+func getTokenFromContext(cont context.Context)(tkn token.Token, err error){
+	md, ok := metadata.FromIncomingContext(cont)
+	if !ok {
+		log.Print("Can't find metadata")
+		err = grpc.Errorf(codes.InvalidArgument, "Can't find metadata")
+		return
+	}
+	tks, ok := md["token"]
+	if (!ok) || (len(tks) < 1) {
+		log.Print("Can't find token")
+		err = grpc.Errorf(codes.InvalidArgument, "Can't find token")
+		return
+	}
+	return decodeTokenString(tks[0])
 }
 
 func (inst GprsServerInstance) GetRegistrationInfo(cont context.Context, id *server.RegistrationId) (infV *server.RegistrationInfo, err error) {
@@ -56,21 +83,10 @@ func (inst GprsServerInstance) AddRegistration(ctx context.Context, in *server.R
 
 func (inst GprsServerInstance) RemoveRegistration(cont context.Context, id *server.RegistrationId) (infV *server.RegistrationInfo, err error) {
 	infV = new(server.RegistrationInfo)
-	md, ok := metadata.FromIncomingContext(cont)
-	if !ok {
-		log.Print("Can't find metadata")
-		err = grpc.Errorf(codes.InvalidArgument, "Can't find metadata")
+	_ , err = getTokenFromContext(cont)
+	if err != nil {
 		return
 	}
-	tks, ok := md["token"]
-	if (!ok) || (len(tks) < 1) {
-		log.Print("Can't find token")
-		err = grpc.Errorf(codes.InvalidArgument, "Can't find token")
-		return
-	}
-	tk := token.Token{}
-	btk, err := base64.StdEncoding.DecodeString(tks[0])
-	err = proto.Unmarshal(btk, &tk)
 	if err != nil {
 		err = grpc.Errorf(codes.InvalidArgument, "Can't parse argument")
 		log.Print("Can't parse argument %s", err.Error())
