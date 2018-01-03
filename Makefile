@@ -3,6 +3,8 @@ PIDFILE= $(GOPATH)/pid/events.pid
 LOGFILE= $(GOPATH)/logs/events.log
 PROTOCPLUG=/home/ksg/go/bin/protoc-gen-go
 
+.PHONY: authtoken server
+
 authtoken:
 	mkdir -p authtoken
 	cp ../auth/token.proto token.proto
