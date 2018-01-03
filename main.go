@@ -25,10 +25,11 @@ func parseViper() application.Config {
 	var statsconf client.Config
 	statsconf.ProducerName = viper.GetString("stats.name")
 	statsconf.Sconfig.BufferSize = viper.GetInt("stats.handler.buffer_size")
+	statsconf.Sconfig.Retries = viper.GetInt("stats.handler.retries")
 	statsconf.Sconfig.Rabbit.Addres = viper.GetString("stats.handler.rabbit.addres")
 	statsconf.Sconfig.Rabbit.User = viper.GetString("stats.handler.rabbit.user")
 	statsconf.Sconfig.Rabbit.Pass = viper.GetString("stats.handler.rabbit.password")
-	statsconf.ChConfig.BufferSize  = viper.GetInt("stats.response.buffer_size")
+	statsconf.ChConfig.BufferSize = viper.GetInt("stats.response.buffer_size")
 	statsconf.ChConfig.Rabbit.Addres = viper.GetString("stats.response.rabbit.addres")
 	statsconf.ChConfig.Rabbit.User = viper.GetString("stats.response.rabbit.user")
 	statsconf.ChConfig.Rabbit.Pass = viper.GetString("stats.response.rabbit.password")
@@ -36,11 +37,12 @@ func parseViper() application.Config {
 	statsconf.RedConf.HashName = viper.GetString("stats.redis.hash_name")
 	statsconf.RedConf.Addres = viper.GetString("stats.redis.addres")
 	statsconf.RedConf.Db = viper.GetInt("stats.redis.db")
+	statsconf.RedConf.RetriesHashName = viper.GetString("stats.redis.retries_hash_name")
 
 	crt := viper.GetString("crt")
 	key := viper.GetString("key")
-	return application.Config{port, crt, key, storage.Config{storageaddres},models.DatabaseConfig{
-		database_user, pass, dbname, addres,salt}, tokenanager.Config{
+	return application.Config{port, crt, key, storage.Config{storageaddres}, models.DatabaseConfig{
+		database_user, pass, dbname, addres, salt}, tokenanager.Config{
 		tokensalt, accesstokenexptime, refreshtokenexptime, codeflowexptime,
 	}, statsconf}
 }

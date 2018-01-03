@@ -9,6 +9,7 @@ message Token {
         USER = 0;
         ADMIN = 1;
         APP = 2;
+        ANONIM = 3;
     }
     Roles Role = 4;
 }

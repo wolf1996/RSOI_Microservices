@@ -24,6 +24,7 @@
   "stats":{
     "name": "auth",
     "timeout": 34,
+    "retries": 5,
     "handler": {
       "workers_number": 1,
       "buffer_size": 10,
@@ -47,7 +48,8 @@
       "username":"",
       "password":"",
       "db":1,
-      "hash_name":"gateway_stats"
+      "hash_name":"auth_stats", 
+      "retries_hash_name":"auth_retr_stats"
     }
   }
 }
