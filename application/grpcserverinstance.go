@@ -3,6 +3,8 @@ package application
 import (
 	"log"
 
+	"encoding/base64"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/wolf1996/registration/application/models"
 	"github.com/wolf1996/registration/server"
@@ -11,24 +13,21 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-	"encoding/base64"
 )
 
 type GprsServerInstance struct {
 }
 
-
-func decodeTokenString(bt string)(tkn token.Token,err error){
-	tk := token.Token{}
+func decodeTokenString(bt string) (tkn token.Token, err error) {
 	bts, err := base64.StdEncoding.DecodeString(bt)
 	if err != nil {
 		return
 	}
-	err = proto.Unmarshal(bts, &tk)
+	err = proto.Unmarshal(bts, &tkn)
 	return
 }
 
-func getTokenFromContext(cont context.Context)(tkn token.Token, err error){
+func getTokenFromContext(cont context.Context) (tkn token.Token, err error) {
 	md, ok := metadata.FromIncomingContext(cont)
 	if !ok {
 		log.Print("Can't find metadata")
@@ -83,7 +82,7 @@ func (inst GprsServerInstance) AddRegistration(ctx context.Context, in *server.R
 
 func (inst GprsServerInstance) RemoveRegistration(cont context.Context, id *server.RegistrationId) (infV *server.RegistrationInfo, err error) {
 	infV = new(server.RegistrationInfo)
-	_ , err = getTokenFromContext(cont)
+	_, err = getTokenFromContext(cont)
 	if err != nil {
 		return
 	}
