@@ -1,12 +1,12 @@
 syntax  = "proto3";
 
 message ViewInfo{
-    string userLogin = 1;
+    int64 userLogin = 1;
     string path  = 2;
 }
 
 message ChangeInfo{
-    string userLogin = 1;
+    int64 userLogin = 1;
     string path  = 2;
 }
 

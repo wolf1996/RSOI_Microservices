@@ -23,13 +23,13 @@ type ResponceMsg struct {
 type  InfoViewMsg struct {
 	Id 		 MessageId `json:"message_ids" bson:"message_ids"`
 	Path 	 string	   `json:"path" bson:"path"`
-	UserId   string	   `json:"user_id" bson:"user_id"`
+	UserId   int64	   `json:"user_id" bson:"user_id"`
 }
 
 type  InfoChangeMsg struct {
 	Id 		 MessageId `json:"message_ids" bson:"message_ids"`
 	Path 	 string	   `json:"path" bson:"path"`
-	UserId   string	   `json:"user_id" bson:"user_id"`
+	UserId   int64	   `json:"user_id" bson:"user_id"`
 }
 
 type  LoginMsg struct {

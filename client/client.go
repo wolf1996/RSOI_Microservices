@@ -47,7 +47,7 @@ func StartApplication(config Config) (err error) {
 	return
 }
 
-func WriteInfoViewMessage(path, userId string)(err error){
+func WriteInfoViewMessage(path string, userId int64)(err error){
 	msg := shared.InfoViewMsg{
 		Id:shared.MessageId{
 			Producer:producerName,
@@ -67,7 +67,7 @@ func WriteInfoViewMessage(path, userId string)(err error){
 	return
 }
 
-func WriteInfoChangeMessage(path, userId string)(err error){
+func WriteInfoChangeMessage(path string, userId int64)(err error){
 	msg := shared.InfoChangeMsg{
 		Id:shared.MessageId{
 			Producer:producerName,
