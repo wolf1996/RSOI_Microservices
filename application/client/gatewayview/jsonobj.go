@@ -2,7 +2,7 @@ package gatewayview
 
 type EventInfo struct {
 	Id              int64  `json:"id"`
-	Owner           string `json:"owner"`
+	Owner           int64 `json:"owner"`
 	PartCount       int64  `json:"part_count"`
 	Description     string `json:"description"`
 }
@@ -20,7 +20,7 @@ type UserInfo struct {
 
 type RegistrationInfo struct {
 	Id int64      `json:"id"`
-	UserId string `json:"user_id"`
+	UserId int64 `json:"user_id"`
 	EventId int64 `json:"event_id"`
 }
 
@@ -42,10 +42,10 @@ type LoginEvent struct {
 
 type ViewEvent struct {
 	Path 	 string	   `json:"path" bson:"path"`
-	UserId   string	   `json:"user_id" bson:"user_id"`
+	UserId   int64	   `json:"user_id" bson:"user_id"`
 }
 
 type ChangeEvent struct {
 	Path 	 string	   `json:"path" bson:"path"`
-	UserId   string	   `json:"user_id" bson:"user_id"`
+	UserId   int64	   `json:"user_id" bson:"user_id"`
 }
