@@ -10,7 +10,7 @@ message UserInfo{
 message Empty{}
 
 message UserId{
-    string id = 1;
+    int64 Id = 1;
 }
 service UserService {
     rpc GetUserInfo(UserId) returns (UserInfo){};

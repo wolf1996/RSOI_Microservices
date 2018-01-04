@@ -36,8 +36,8 @@ func ApplyConfig(config DatabaseConfig) (err error) {
 	return nil
 }
 
-func IncrementUserEventCounter(id string) (inf UserInfo, err error) {
-	rows, err := db.Query("UPDATE USER_INFO SET EVENTS_NUMBER = EVENTS_NUMBER + 1 WHERE username = $1 RETURNING *;", id)
+func IncrementUserEventCounter(id int64) (inf UserInfo, err error) {
+	rows, err := db.Query("UPDATE USER_INFO SET EVENTS_NUMBER = EVENTS_NUMBER + 1 WHERE ID = $1 RETURNING *;", id)
 	if err != nil {
 		return
 	}
@@ -45,7 +45,7 @@ func IncrementUserEventCounter(id string) (inf UserInfo, err error) {
 	if !rows.Next() {
 		dbErr := rows.Err()
 		if dbErr == nil {
-			log.Printf("Failed to update %s", id)
+			log.Printf("Failed to update %d", id)
 			err = EmptyResult
 			return
 		}
@@ -59,8 +59,8 @@ func IncrementUserEventCounter(id string) (inf UserInfo, err error) {
 	return
 }
 
-func GetUserInfo(login string) (inf UserInfo, err error) {
-	rows, err := db.Query("SELECT * FROM USER_INFO WHERE username = $1", login)
+func GetUserInfo(id int64) (inf UserInfo, err error) {
+	rows, err := db.Query("SELECT * FROM USER_INFO WHERE id = $1", id)
 	if err != nil {
 		return
 	}
@@ -68,7 +68,7 @@ func GetUserInfo(login string) (inf UserInfo, err error) {
 	if !rows.Next() {
 		dbErr := rows.Err()
 		if dbErr == nil {
-			log.Printf("Failed to find user info %s", login)
+			log.Printf("Failed to find user info %s", id)
 			err = AddError
 			return
 		}
@@ -82,8 +82,8 @@ func GetUserInfo(login string) (inf UserInfo, err error) {
 	return
 }
 
-func DecrementUserEventCounter(id string) (inf UserInfo, err error) {
-	rows, err := db.Query("UPDATE USER_INFO SET EVENTS_NUMBER = (CASE WHEN EVENTS_NUMBER > 0 THEN (EVENTS_NUMBER - 1) ELSE 0 END) WHERE username = $1 RETURNING *;", id)
+func DecrementUserEventCounter(id int64) (inf UserInfo, err error) {
+	rows, err := db.Query("UPDATE USER_INFO SET EVENTS_NUMBER = (CASE WHEN EVENTS_NUMBER > 0 THEN (EVENTS_NUMBER - 1) ELSE 0 END) WHERE ID = $1 RETURNING *;", id)
 	if err != nil {
 		return
 	}
