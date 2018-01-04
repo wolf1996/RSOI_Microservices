@@ -16,7 +16,7 @@ import (
 
 func GetUserInfo(c *gin.Context) {
 	tkn := c.MustGet(middleware.AtokenName).(token.Token)
-	id := tkn.LogIn
+	id := tkn.Id
 	client.WriteInfoViewMessage(c.Request.URL.Path,id)
 	var inf views.UserInfo
 	res, err := userclient.GetUserInfo(id, tkn)

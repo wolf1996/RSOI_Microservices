@@ -2,7 +2,7 @@ package views
 
 type RegistrationInfo struct {
 	Id int64      `json:"id"`
-	UserId string  `json:"user_id"`
+	UserId int64  `json:"user_id"`
 	EventId int64 `json:"event_id"`
 }
 
@@ -14,5 +14,5 @@ type AllRegInfo struct {
 type AllRegInfoAsync struct {
 	Id int64 		`json:"id"`
 	EventId  int64`json:"event_id"`
-	User     string  `json:"user"`
+	User     int64  `json:"user"`
 }

@@ -1,7 +1,6 @@
 package eventsclient
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"log"
@@ -11,6 +10,7 @@ import (
 	"github.com/wolf1996/gateway/evserver"
 	"google.golang.org/grpc"
 	"github.com/wolf1996/gateway/token"
+	"github.com/wolf1996/gateway/resources"
 )
 
 type Config struct {
@@ -21,7 +21,7 @@ type Config struct {
 
 type EventInfo struct {
 	Id          int64
-	Owner       string
+	Owner       int64
 	PartCount   int64
 	Description string
 }
@@ -49,7 +49,11 @@ func GetEventInfo(id int64, token token.Token) (uinf *EventInfo, err error) {
 		return
 	}
 	cli := evserver.NewEventServiceClient(conn)
-	info, err := cli.GetEventInfo(context.Background(), &evserver.EventId{id})
+	ctx, err := resources.TokenToContext(token)
+	if err != nil {
+		return
+	}
+	info, err := cli.GetEventInfo(ctx, &evserver.EventId{id})
 	if err != nil {
 		return
 	}
@@ -62,7 +66,11 @@ func IncrementEventUsers(id int64, token token.Token) (uinf *EventInfo, err erro
 		return
 	}
 	cli := evserver.NewEventServiceClient(conn)
-	info, err := cli.IncrementUsersNumber(context.Background(), &evserver.EventId{id})
+	ctx, err := resources.TokenToContext(token)
+	if err != nil {
+		return
+	}
+	info, err := cli.IncrementUsersNumber(ctx, &evserver.EventId{id})
 	if err != nil {
 		return
 	}
@@ -75,7 +83,11 @@ func DecrementEventUsers(id int64, token token.Token) (uinf *EventInfo, err erro
 		return
 	}
 	cli := evserver.NewEventServiceClient(conn)
-	info, err := cli.DecrementUsersNumber(context.Background(), &evserver.EventId{id})
+	ctx, err := resources.TokenToContext(token)
+	if err != nil {
+		return
+	}
+	info, err := cli.DecrementUsersNumber(ctx, &evserver.EventId{id})
 	if err != nil {
 		return
 	}
@@ -87,14 +99,18 @@ func DecrementEventUsersAsync(id int64, token token.Token) (err error) {
 	return
 }
 
-func GetEvents(pageSize int64, pageNum int64, userId string, token token.Token) (events []EventInfo, err error) {
+func GetEvents(pageSize int64, pageNum int64, userId int64, token token.Token) (events []EventInfo, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError
 		return
 	}
 	cli := evserver.NewEventServiceClient(conn)
-	evStream, err := cli.GetEvents(context.Background(), &evserver.EventsRequest{pageSize, pageNum, userId})
+	ctx, err := resources.TokenToContext(token)
+	if err != nil {
+		return
+	}
+	evStream, err := cli.GetEvents(ctx, &evserver.EventsRequest{pageSize, pageNum, userId})
 	if err != nil {
 		log.Print(err)
 		return

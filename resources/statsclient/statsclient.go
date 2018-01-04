@@ -6,9 +6,9 @@ import (
 	"log"
 	"io"
 	"google.golang.org/grpc"
-	"context"
 	"github.com/wolf1996/gateway/statserver"
 	"github.com/wolf1996/gateway/token"
+	"github.com/wolf1996/gateway/resources"
 )
 
 
@@ -24,12 +24,12 @@ type LoginEvent struct {
 
 type ViewEvent struct {
 	Path 	 string	   `json:"path" bson:"path"`
-	UserId   string	   `json:"user_id" bson:"user_id"`
+	UserId   int64	   `json:"user_id" bson:"user_id"`
 }
 
 type ChangeEvent struct {
 	Path 	 string	   `json:"path" bson:"path"`
-	UserId   string	   `json:"user_id" bson:"user_id"`
+	UserId   int64	   `json:"user_id" bson:"user_id"`
 } 
 var addres string
 var creds credentials.TransportCredentials
@@ -53,7 +53,11 @@ func GetLogins( token token.Token) (info []LoginEvent, err error) {
 		return
 	}
 	cli := statserver.NewStatisticServiceClient(conn)
-	infoStr, err := cli.GetLogins(context.Background(),&statserver.Empty{})
+	ctx, err := resources.TokenToContext(token)
+	if err != nil {
+		return
+	}
+	infoStr, err := cli.GetLogins(ctx,&statserver.Empty{})
 	if err != nil {
 		log.Print(err)
 		return
@@ -83,7 +87,11 @@ func GetViewEvents( token token.Token) (info []ViewEvent, err error) {
 		return
 	}
 	cli := statserver.NewStatisticServiceClient(conn)
-	infoStr, err := cli.GetViews(context.Background(),&statserver.Empty{})
+	ctx, err := resources.TokenToContext(token)
+	if err != nil {
+		return
+	}
+	infoStr, err := cli.GetViews(ctx,&statserver.Empty{})
 	if err != nil {
 		log.Print(err)
 		return
@@ -112,7 +120,11 @@ func GetChangeEvents( token token.Token) (info []ChangeEvent, err error) {
 		return
 	}
 	cli := statserver.NewStatisticServiceClient(conn)
-	infoStr, err := cli.GetChanges(context.Background(),&statserver.Empty{})
+	ctx, err := resources.TokenToContext(token)
+	if err != nil {
+		return
+	}
+	infoStr, err := cli.GetChanges(ctx,&statserver.Empty{})
 	if err != nil {
 		log.Print(err)
 		return

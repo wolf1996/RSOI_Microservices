@@ -19,7 +19,7 @@ import (
 func RegistrateMe(c *gin.Context) {
 	//добавить токен здесь
 	tkn := c.MustGet(middleware.AtokenName).(token.Token)
-	user := tkn.LogIn
+	user := tkn.Id
 	client.WriteInfoChangeMessage(c.Request.URL.Path, user)
 	key, err := strconv.ParseInt(c.Param("event_id"), 10, 64)
 	if err != nil {
@@ -61,7 +61,7 @@ func RegistrateMe(c *gin.Context) {
 		}
 	}()
 
-	regdata, err := registrationclient.AddRegistration(userData.Name, eventData.Id, tkn)
+	regdata, err := registrationclient.AddRegistration(userData.Id, eventData.Id, tkn)
 	if err != nil {
 		log.Print(err.Error())
 		err, code := registrationclient.ErrorTransform(err)
@@ -85,7 +85,7 @@ func RegistrateMe(c *gin.Context) {
 
 func RemoveRegistration(c *gin.Context) {
 	tkn := c.MustGet(middleware.AtokenName).(token.Token)
-	user := tkn.LogIn
+	user := tkn.Id
 	client.WriteInfoChangeMessage(c.Request.URL.Path, user)
 	key, err := strconv.ParseInt(c.Param("registration_id"), 10, 64)
 	if err != nil {
@@ -132,7 +132,7 @@ func RemoveRegistration(c *gin.Context) {
 func GetRegisrationInfo(c *gin.Context) {
 	var inf views.RegistrationInfo
 	tkn := c.MustGet(middleware.AtokenName).(token.Token)
-	client.WriteInfoViewMessage(c.Request.URL.Path, "")
+	client.WriteInfoViewMessage(c.Request.URL.Path, -1)
 	key, err := strconv.ParseInt(c.Param("registration_id"), 10, 64)
 	if err != nil {
 		log.Print(err.Error())
@@ -156,7 +156,7 @@ func GetRegisrationInfo(c *gin.Context) {
 
 func GetRegistrations(c *gin.Context) {
 	tkn := c.MustGet(middleware.AtokenName).(token.Token)
-	id := tkn.LogIn
+	id := tkn.Id
 	client.WriteInfoViewMessage(c.Request.URL.Path, id)
 	strparam := c.Param("pagenum")
 	if len(strparam) == 0 {

@@ -1,13 +1,13 @@
 package userclient
 
 import (
-"github.com/wolf1996/gateway/resources"
 "github.com/streadway/amqp"
 "fmt"
 "log"
 "encoding/json"
 "github.com/wolf1996/gateway/token"
 	"github.com/golang/protobuf/proto"
+	"encoding/base64"
 )
 
 var ch *amqp.Channel
@@ -19,17 +19,18 @@ type QConfig struct {
 	Pass string
 }
 
-func handler(msg resources.MessageTokened, tn token.Token)(err error){
+func handler(msg interface{}, tn token.Token)(err error){
+	//TODO: И тут типы добавить
 	body, err := json.Marshal(msg)
 	if err != nil {
 		return
 	}
 	cds := amqp.Table{}
-	mg, err :=proto.MarshalMessageSetJSON(tn)
+	mg, err :=proto.Marshal(&tn)
 	if err != nil {
 		return
 	}
-	cds["token"] = mg
+	cds["token"] = base64.StdEncoding.EncodeToString(mg)
 	mesg := amqp.Publishing{
 		ContentType: "application/json",
 		Body: body,
@@ -48,12 +49,9 @@ func handler(msg resources.MessageTokened, tn token.Token)(err error){
 	return
 }
 
-func UserEventsDecrementCounter(userId string, token token.Token) (err error){
-	return handler(resources.MessageTokened{
-		Token:  "",
-		Message:UserDecrementMessage{
+func UserEventsDecrementCounter(userId int64, token token.Token) (err error){
+	return handler(UserDecrementMessage{
 			UserId: userId,
-		},
 	},
 	token)
 }

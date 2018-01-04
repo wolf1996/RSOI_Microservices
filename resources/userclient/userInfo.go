@@ -1,7 +1,6 @@
 package userclient
 
 import (
-	"context"
 	"fmt"
 	"log"
 
@@ -9,6 +8,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"github.com/wolf1996/gateway/token"
+	"github.com/wolf1996/gateway/resources"
 )
 
 type Config struct {
@@ -40,47 +40,59 @@ func SetConfigs(config Config) {
 	}
 }
 
-func IncrementEventsCounter(id string, token token.Token) (uinf *UserInfo, err error) {
+func IncrementEventsCounter(id int64, token token.Token) (uinf *UserInfo, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError
 		return
 	}
 	cli := usserver.NewUserServiceClient(conn)
-	info, err := cli.IncrementUserCounter(context.Background(), &usserver.UserId{id})
+	ctx, err := resources.TokenToContext(token)
+	if err != nil {
+		return
+	}
+	info, err := cli.IncrementUserCounter(ctx, &usserver.UserId{id})
 	if err != nil {
 		return
 	}
 	return &UserInfo{info.Name, info.EventsSubscribed, info.Id}, nil
 }
 
-func DecrementEventsCounter(id string, token token.Token) (uinf *UserInfo, err error) {
+func DecrementEventsCounter(id int64, token token.Token) (uinf *UserInfo, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError
 		return
 	}
 	cli := usserver.NewUserServiceClient(conn)
-	info, err := cli.DecrementUserCounter(context.Background(), &usserver.UserId{id})
+	ctx, err := resources.TokenToContext(token)
+	if err != nil {
+		return
+	}
+	info, err := cli.DecrementUserCounter(ctx, &usserver.UserId{id})
 	if err != nil {
 		return
 	}
 	return &UserInfo{info.Name, info.EventsSubscribed, info.Id}, nil
 }
 
-func DecrementEventsCounterAsync(id string, token token.Token) (err error) {
+func DecrementEventsCounterAsync(id int64, token token.Token) (err error) {
 	UserEventsDecrementCounter(id, token)
 	return nil
 }
 
-func GetUserInfo(id string, token token.Token) (uinf *UserInfo, err error) {
+func GetUserInfo(id int64, token token.Token) (uinf *UserInfo, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError
 		return
 	}
 	cli := usserver.NewUserServiceClient(conn)
-	info, err := cli.GetUserInfo(context.Background(), &usserver.UserId{id})
+	ctx, err := resources.TokenToContext(token)
+	if err != nil {
+		return
+	}
+	info, err := cli.GetUserInfo(ctx, &usserver.UserId{id})
 	if err != nil {
 		return
 	}

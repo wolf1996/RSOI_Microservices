@@ -9,6 +9,7 @@ import (
 	"github.com/wolf1996/gateway/resources/userclient"
 	"github.com/golang/protobuf/proto"
 	"github.com/wolf1996/gateway/token"
+	"encoding/base64"
 )
 
 type RabbitConfig struct {
@@ -24,36 +25,44 @@ type Config struct {
 }
 
 func UserIteration(msg amqp.Delivery)(err error){
-	tknS := msg.Headers["token"].([]byte)
-	var tkn token.Token
-	err = proto.UnmarshalMessageSetJSON(tknS, &tkn)
+	tknS, err := base64.StdEncoding.DecodeString(msg.Headers["token"].(string))
 	if err != nil {
 		return
 	}
-	message := userclient.MessageTokened{}
+	var tkn token.Token
+	err = proto.Unmarshal(tknS, &tkn)
+	if err != nil {
+		return
+	}
+	// Добавить тут проверку по типу из message
+	message := userclient.UserDecrementMessage{}
 	err = json.Unmarshal(msg.Body,&message)
 	if err != nil {
 		return
 	}
-	id := message.Message.UserId
+	id := message.UserId
 	log.Printf("Processing User %d", id)
 	_, err = userclient.DecrementEventsCounter(id, tkn)
 	return
 }
 
 func EventIteration( msg amqp.Delivery)(err error){
-	tknS := msg.Headers["token"].([]byte)
-	var tkn token.Token
-	err = proto.UnmarshalMessageSetJSON(tknS, &tkn)
+	tknS, err := base64.StdEncoding.DecodeString(msg.Headers["token"].(string))
 	if err != nil {
 		return
 	}
-	message := eventsclient.MessageTokened{}
+	var tkn token.Token
+	err = proto.Unmarshal(tknS, &tkn)
+	if err != nil {
+		return
+	}
+	//TODO: и тут впилить проверку
+	message := eventsclient.DecrementRegistrationMessage{}
 	err = json.Unmarshal(msg.Body,&message)
 	if err != nil {
 		return
 	}
-	id := message.Message.EventId
+	id := message.EventId
 	log.Printf("Processing Event %d", id)
 	_, err = eventsclient.DecrementEventUsers(id, tkn)
 	return

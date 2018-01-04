@@ -1,7 +1,6 @@
 package registrationclient
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"log"
@@ -10,10 +9,8 @@ import (
 
 	"github.com/wolf1996/gateway/regserver"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"github.com/wolf1996/gateway/token"
-	"github.com/golang/protobuf/proto"
-	"encoding/base64"
+	"github.com/wolf1996/gateway/resources"
 )
 
 type Config struct {
@@ -23,7 +20,7 @@ type Config struct {
 
 type RegistrationInfo struct {
 	Id      int64
-	UserId  string
+	UserId  int64
 	EventId int64
 }
 
@@ -41,14 +38,18 @@ func SetConfigs(config Config) {
 	}
 }
 
-func AddRegistration(userId string, eventId int64, token token.Token) (infoV RegistrationInfo, err error) {
+func AddRegistration(userId int64, eventId int64, token token.Token) (infoV RegistrationInfo, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError
 		return
 	}
 	cli := regserver.NewRegistrationServiceClient(conn)
-	info, err := cli.AddRegistration(context.Background(), &regserver.RegistrationToAdd{userId, eventId})
+	ctx, err := resources.TokenToContext(token)
+	if err != nil {
+		return
+	}
+	info, err := cli.AddRegistration(ctx, &regserver.RegistrationToAdd{userId, eventId})
 	if err != nil {
 		return
 	}
@@ -67,7 +68,11 @@ func GetRegistrationInfo(id int64, token token.Token) (infoV RegistrationInfo, e
 		return
 	}
 	cli := regserver.NewRegistrationServiceClient(conn)
-	info, err := cli.GetRegistrationInfo(context.Background(), &regserver.RegistrationId{id})
+	ctx, err := resources.TokenToContext(token)
+	if err != nil {
+		return
+	}
+	info, err := cli.GetRegistrationInfo(ctx, &regserver.RegistrationId{id})
 	if err != nil {
 		return
 	}
@@ -85,14 +90,10 @@ func RemoveRegistration(id int64, token token.Token) (infoV RegistrationInfo, er
 		err = ConnectionError
 		return
 	}
-	btTok, err := proto.MarshalMessageSetJSON(&token)
+	ctx, err := resources.TokenToContext(token)
 	if err != nil {
-		log.Print(err.Error())
 		return
 	}
-	strTok := base64.StdEncoding.EncodeToString(btTok)
-	md := metadata.Pairs("token", strTok)
-	ctx := metadata.NewOutgoingContext(context.Background(), md)
 	cli := regserver.NewRegistrationServiceClient(conn)
 	info, err := cli.RemoveRegistration(ctx, &regserver.RegistrationId{id})
 	if err != nil {
@@ -106,14 +107,18 @@ func RemoveRegistration(id int64, token token.Token) (infoV RegistrationInfo, er
 	return
 }
 
-func GetRegistrations(id string, pageNum int64, pageSize int64, token token.Token) (info []RegistrationInfo, err error) {
+func GetRegistrations(id int64, pageNum int64, pageSize int64, token token.Token) (info []RegistrationInfo, err error) {
 	conn, err := grpc.Dial(addres, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		err = ConnectionError
 		return
 	}
 	cli := regserver.NewRegistrationServiceClient(conn)
-	infoStr, err := cli.GetUserRegistrations(context.Background(), &regserver.UsersRegistrationsRequest{id, pageSize, pageNum})
+	ctx, err := resources.TokenToContext(token)
+	if err != nil {
+		return
+	}
+	infoStr, err := cli.GetUserRegistrations(ctx, &regserver.UsersRegistrationsRequest{id, pageSize, pageNum})
 	if err != nil {
 		log.Print(err)
 		return

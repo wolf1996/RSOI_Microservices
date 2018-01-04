@@ -68,8 +68,8 @@ func StartServer(config GatewayConfig) error {
 
 	rtr.GET("/event/:event_id", controllers.GetEventInfo)
 	rtr.GET("/events/:pagenum", controllers.GetEvents)
-	rtr.POST("/login",controllers.LogIn)
-	rtr.POST("/shiftcode", controllers.GetShiftCodeflow)
+	router.POST("/login",controllers.LogIn)
+	router.POST("/shiftcode", controllers.GetShiftCodeflow)
 	router.Run(port)
 	return nil
 }

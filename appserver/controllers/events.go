@@ -20,7 +20,7 @@ func GetEventInfo(c *gin.Context) {
 	} else {
 		tkn.Role = token.Token_ANONIM
 	}
-	client.WriteInfoViewMessage(c.Request.URL.Path,"")
+	client.WriteInfoViewMessage(c.Request.URL.Path,-1)
 	var inf views.EventInfo
 	key,err := strconv.ParseInt(c.Param("event_id"), 10, 64)
 	if err != nil {
@@ -52,7 +52,7 @@ func GetEvents(c *gin.Context){
 	} else {
 		tkn.Role = token.Token_ANONIM
 	}
-	client.WriteInfoViewMessage(c.Request.URL.Path,"")
+	client.WriteInfoViewMessage(c.Request.URL.Path,-1)
 	strparam := c.Param("pagenum")
 	if len(strparam) == 0 {
 		strparam = "1"
@@ -73,7 +73,7 @@ func GetEvents(c *gin.Context){
 		c.JSON(http.StatusBadRequest, views.Error{err.Error()})
 		return
 	}
-	info, err := eventsclient.GetEvents(pasize, pnum, "", tkn)
+	info, err := eventsclient.GetEvents(pasize, pnum, -1, tkn)
 	if err != nil {
 		log.Print(err.Error())
 		err, code := eventsclient.ErrorTransform(err)
