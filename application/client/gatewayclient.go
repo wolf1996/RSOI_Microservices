@@ -233,7 +233,7 @@ func GetChangeStats(cookies []*http.Cookie)(regs []gatewayview.ChangeEvent, resp
 }
 
 func GetLoginStats(cookies []*http.Cookie)(regs []gatewayview.LoginEvent, resp *http.Response, err error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/statistic/views", addres), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/statistic/logins", addres), nil)
 	for _, i := range cookies {
 		req.AddCookie(i)
 	}

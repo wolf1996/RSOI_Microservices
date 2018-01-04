@@ -42,6 +42,11 @@ func EventsList(c *gin.Context){
 		c.HTML(req.StatusCode,"error.html", gin.H{"error": err.Error(),})
 		return
 	}
+	if (req.StatusCode != http.StatusOK) && (req.StatusCode != http.StatusCreated) {
+		log.Print("Some shit got")
+		c.HTML(req.StatusCode,"error.html", gin.H{"error": "Some shit got",})
+		return
+	}
 	bts, err := json.Marshal(inf)
 	if err != nil {
 		log.Print(err.Error())
@@ -69,6 +74,11 @@ func RegistreMe(c *gin.Context){
 		c.HTML(resp.StatusCode,"error.html", gin.H{"error": err.Error(),})
 		return
 	}
+	if (resp.StatusCode != http.StatusOK) && (resp.StatusCode != http.StatusCreated) {
+		log.Print("Some shit got")
+		c.HTML(resp.StatusCode,"error.html", gin.H{"error": "Some shit got",})
+		return
+	}
 	for _,i := range resp.Cookies(){
 		c.SetCookie(i.Name,i.Value,i.MaxAge,i.Path,i.Domain,i.Secure, i.HttpOnly)
 	}
@@ -82,6 +92,11 @@ func GetUserInfo(c *gin.Context) {
 	if err != nil {
 		log.Print(err.Error())
 		c.HTML(req.StatusCode,"error.html", gin.H{"error": err.Error(),})
+		return
+	}
+	if (req.StatusCode != http.StatusOK) && (req.StatusCode != http.StatusCreated) {
+		log.Print("Some shit got")
+		c.HTML(req.StatusCode,"error.html", gin.H{"error": "Some shit got",})
 		return
 	}
 	bts, err := json.Marshal(inf)
@@ -126,6 +141,11 @@ func GetUserRegistrations(c *gin.Context){
 		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error":err.Error()})
 		return
 	}
+	if (req.StatusCode != http.StatusOK) && (req.StatusCode != http.StatusCreated) {
+		log.Print("Some shit got")
+		c.HTML(req.StatusCode,"error.html", gin.H{"error": "Some shit got",})
+		return
+	}
 	bts, err := json.Marshal(inf)
 	if err != nil {
 		log.Print(err.Error())
@@ -153,6 +173,11 @@ func RemoveReg(c *gin.Context){
 		c.HTML(resp.StatusCode, "error.html", gin.H{"error":err.Error()})
 		return
 	}
+	if (resp.StatusCode != http.StatusOK) && (resp.StatusCode != http.StatusCreated) {
+		log.Print("Some shit got")
+		c.HTML(resp.StatusCode,"error.html", gin.H{"error": "Some shit got",})
+		return
+	}
 	for _,i := range resp.Cookies(){
 		c.SetCookie(i.Name,i.Value,i.MaxAge,i.Path,i.Domain,i.Secure, i.HttpOnly)
 	}
@@ -176,6 +201,11 @@ func GetEventInfo(c *gin.Context) {
 	if err != nil {
 		log.Print(err.Error())
 		c.HTML(req.StatusCode, "error.html", gin.H{"error":err.Error()})
+		return
+	}
+	if (req.StatusCode != http.StatusOK) && (req.StatusCode != http.StatusCreated) {
+		log.Print("Some shit got")
+		c.HTML(req.StatusCode,"error.html", gin.H{"error": "Some shit got",})
 		return
 	}
 	bts, err := json.Marshal(inf)
@@ -238,6 +268,11 @@ func BigRedButton(c *gin.Context){
 		c.HTML(http.StatusBadRequest,"error.html", gin.H{"error": err.Error(),})
 		return
 	}
+	if (rsp.StatusCode != http.StatusOK) && (rsp.StatusCode != http.StatusCreated) {
+		log.Print("Some shit got")
+		c.HTML(rsp.StatusCode,"error.html", gin.H{"error": "Some shit got",})
+		return
+	}
 	for _,i := range rsp.Cookies(){
 		c.SetCookie(i.Name,i.Value,i.MaxAge,i.Path,i.Domain,i.Secure, i.HttpOnly)
 	}
@@ -265,7 +300,7 @@ func GiveAccess(c *gin.Context)  {
 		c.HTML(http.StatusBadRequest,"error.html", gin.H{"error": err.Error(),})
 		return
 	}
-	if rsp.StatusCode != http.StatusOK {
+	if (rsp.StatusCode != http.StatusOK) && (rsp.StatusCode != http.StatusCreated) {
 		log.Print("Error: failed to parse client url %s")
 		c.HTML(http.StatusBadRequest,"error.html", gin.H{"error": "Some error",})
 		return

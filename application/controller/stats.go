@@ -7,6 +7,11 @@ import (
 	"net/http"
 )
 
+
+func GetAdmin(c *gin.Context){
+	c.HTML(http.StatusOK, "admin_menu.html", gin.H{})
+}
+
 func GetViewsStats(c *gin.Context){
 	ccs := c.Request.Cookies()
 	views, resp, err := client.GetViewStats(ccs)
@@ -19,6 +24,11 @@ func GetViewsStats(c *gin.Context){
 			code =  http.StatusServiceUnavailable
 		}
 		c.HTML(code,"error.html", gin.H{"error": err.Error(),})
+		return
+	}
+	if resp.StatusCode != http.StatusOK {
+		log.Print("Some shit got")
+		c.HTML(resp.StatusCode,"error.html", gin.H{"error": "Some shit got",})
 		return
 	}
 	for _,i := range resp.Cookies(){
@@ -41,6 +51,11 @@ func GetChangesStats(c *gin.Context){
 		c.HTML(code,"error.html", gin.H{"error": err.Error(),})
 		return
 	}
+	if resp.StatusCode != http.StatusOK {
+		log.Print("Some shit got")
+		c.HTML(resp.StatusCode,"error.html", gin.H{"error": "Some shit got",})
+		return
+	}
 	for _,i := range resp.Cookies(){
 		c.SetCookie(i.Name,i.Value,i.MaxAge,i.Path,i.Domain,i.Secure, i.HttpOnly)
 	}
@@ -59,6 +74,11 @@ func GetLoginStats(c *gin.Context){
 			code =  http.StatusServiceUnavailable
 		}
 		c.HTML(code,"error.html", gin.H{"error": err.Error(),})
+		return
+	}
+	if resp.StatusCode != http.StatusOK {
+		log.Print("Some shit got")
+		c.HTML(resp.StatusCode,"error.html", gin.H{"error": "Some shit got",})
 		return
 	}
 	for _,i := range resp.Cookies(){
