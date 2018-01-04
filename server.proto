@@ -2,7 +2,7 @@ syntax  = "proto3";
 
 message EventInfo{
     int64 id = 1;
-    string name = 2;
+    int64 name = 2;
     int64 participants = 3;
     string description = 4;
 }
@@ -16,7 +16,7 @@ message EventId{
 message EventsRequest{
     int64 pageSize = 1;
     int64 pageNumber = 2;
-    string userId = 3;
+    int64 userId = 3;
 }
 
 

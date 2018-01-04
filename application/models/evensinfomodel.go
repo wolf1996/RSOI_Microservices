@@ -10,7 +10,7 @@ import (
 
 type EventInfo struct {
 	Id              int64
-	Owner           string
+	Owner           int64
 	PartCount       int64
 	Description     string
 }
@@ -110,11 +110,11 @@ func GetEventInfo(id int64)(info EventInfo, err error){
 	return
 }
 
-func GetEvents(userId string, pageNumber int64, pageSize int64, stream server.EventService_GetEventsServer)(err error){
+func GetEvents(userId int64, pageNumber int64, pageSize int64, stream server.EventService_GetEventsServer)(err error){
 	var params []interface{}
 	ind := 1
 	qr := "SELECT * FROM events_info "
-	if userId != ""{
+	if userId != -1{
 		qr+= fmt.Sprintf(" WHERE userId = $%d ", ind)
 		ind += 1		
 		params = append(params, userId)
