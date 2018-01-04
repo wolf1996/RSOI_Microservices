@@ -16,7 +16,7 @@ type Config struct{
 
 type RegistrationInfo struct {
 	Id      int64
-	UserId  string
+	UserId  int64
 	EventId int64
 }
 

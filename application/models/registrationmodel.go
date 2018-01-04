@@ -17,7 +17,7 @@ type DatabaseConfig struct {
 
 type RegistrationInfo struct {
 	Id      int64
-	UserId  string
+	UserId  int64
 	EventId int64
 }
 
@@ -36,8 +36,8 @@ func ApplyConfig(config DatabaseConfig) (err error) {
 	return nil
 }
 
-func AddRegistration(userId string, eventId int64) (inf RegistrationInfo, err error) {
-	rows, err := db.Query("INSERT INTO RSOI_REGS (EVENT_ID, USER_ID) SELECT $1, CAST($2 AS VARCHAR) WHERE NOT EXISTS (SELECT * FROM RSOI_REGS WHERE EVENT_ID = $1 AND USER_ID = $2 ) RETURNING *;", eventId, userId)
+func AddRegistration(userId int64, eventId int64) (inf RegistrationInfo, err error) {
+	rows, err := db.Query("INSERT INTO RSOI_REGS (EVENT_ID, USER_ID) SELECT $1, CAST($2 AS BIGINT) WHERE NOT EXISTS (SELECT * FROM RSOI_REGS WHERE EVENT_ID = $1 AND USER_ID = $2 ) RETURNING *;", eventId, userId)
 	if err != nil {
 		return
 	}
@@ -97,7 +97,7 @@ func RemoveRegistration(id int64) (inf RegistrationInfo, err error) {
 	return
 }
 
-func GetUserRegistrations(id string, pnumber int64, psize int64, stream server.RegistrationService_GetUserRegistrationsServer) (err error) {
+func GetUserRegistrations(id int64, pnumber int64, psize int64, stream server.RegistrationService_GetUserRegistrationsServer) (err error) {
 	rows, err := db.Query("SELECT * FROM rsoi_regs WHERE user_id = $1 OFFSET $2 LIMIT $3 ;", id, pnumber*psize, psize)
 	if err != nil {
 		return

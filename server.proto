@@ -2,12 +2,12 @@ syntax  = "proto3";
 
 message RegistrationInfo{
     int64 Id = 1;
-    string UserId = 2;
+    int64 UserId = 2;
     int64 EventId = 3;
 }
 
 message RegistrationToAdd{
-    string UserId = 1;
+    int64 UserId = 1;
     int64 EventId = 2;
 }
 
@@ -16,7 +16,7 @@ message RegistrationId{
 }
 
 message UsersRegistrationsRequest{
-    string userId = 1;
+    int64 userId = 1;
     int64 pageSize = 2;
     int64 pageNumber = 3;
 }
